@@ -34,6 +34,13 @@ public class MediaPickerFile {
             }
         }
 
+        final File file = File.createTempFile(name, suffix, dir);
+
+        if (!file.exists()) {
+
+            throw new IOException("Unable to create temporary file, does not exist.");
+        }
+
         return File.createTempFile(name, suffix, dir);
     }
 
