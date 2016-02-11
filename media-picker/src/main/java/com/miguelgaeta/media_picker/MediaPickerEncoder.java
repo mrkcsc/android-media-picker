@@ -156,6 +156,8 @@ public class MediaPickerEncoder {
         final String encodedData = Base64.encodeToString(bitmapData.toByteArray(), Base64.NO_WRAP);
 
         bitmap.recycle();
+
+        bitmapData.flush();
         bitmapData.close();
 
         return encodedData;
