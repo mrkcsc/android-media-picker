@@ -13,6 +13,10 @@ allprojects {
 
     repositories {
         jcenter()
+
+        maven {
+            url 'http://lorenzo.villani.me/android-cropimage/'
+        }
     }
 }
 
