@@ -17,6 +17,7 @@ import java.io.IOException;
  *
  * File chooser library: https://github.com/iPaulPro/aFileChooser
  */
+@SuppressWarnings("UnusedDeclaration")
 public class MediaPickerUri {
 
     private static final String AUTHORITY_GOOGLE_PHOTOS = "com.google.android.apps.photos.content";
