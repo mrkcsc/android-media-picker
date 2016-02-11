@@ -45,7 +45,7 @@ public class MediaPickerEncoder {
     }
 
     /**
-     * @see MediaPickerEncoder#toDataUrl(Bitmap, String, Bitmap.CompressFormat, int)
+     * @see #toDataUrl(Bitmap, String, Bitmap.CompressFormat, int)
      */
     public static String toDataUrl(final Bitmap bitmap, final String mimeType) throws IOException {
 
@@ -78,7 +78,7 @@ public class MediaPickerEncoder {
     }
 
     /**
-     * @see MediaPickerEncoder#toDataUrl(String, String, Bitmap.CompressFormat, int)
+     * @see #toDataUrl(String, String, Bitmap.CompressFormat, int)
      */
     public static String toDataUrl(final String filePath, final String mimeType) throws IOException {
 
@@ -86,7 +86,7 @@ public class MediaPickerEncoder {
     }
 
     /**
-     * @see MediaPickerEncoder#toDataUrl(String, String)
+     * @see #toDataUrl(String, String)
      */
     public static String toDataUrl(String filePath) throws IOException  {
 
@@ -116,7 +116,7 @@ public class MediaPickerEncoder {
     }
 
     /**
-     * @see MediaPickerEncoder#toDataUrl(File, String, Bitmap.CompressFormat, int)
+     * @see #toDataUrl(File, String, Bitmap.CompressFormat, int)
      */
     public static String toDataUrl(final File file, String mimeType) throws IOException  {
 
@@ -124,7 +124,7 @@ public class MediaPickerEncoder {
     }
 
     /**
-     * @see MediaPickerEncoder#toDataUrl(File, String)
+     * @see #toDataUrl(File, String)
      */
     public static String toDataUrl(File file) throws IOException  {
 
