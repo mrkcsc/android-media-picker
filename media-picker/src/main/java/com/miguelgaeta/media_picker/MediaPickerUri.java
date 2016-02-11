@@ -41,24 +41,31 @@ public class MediaPickerUri {
 
         if (context == null) {
 
-            throw new IOException("Context cannot be null.");
+            throw new IOException("A valid android application context is required.");
         }
 
         if (uri == null) {
 
-            throw new IOException("Uri cannot be null.");
+            throw new IOException("File URI cannot be null.");
         }
 
         final String path = getPath(context, uri);
 
         if (path == null) {
 
-            throw new IOException("Path was not found.");
+            throw new IOException("File path was not found.");
         }
 
         if (isLocal(path)) {
 
-            throw new IOException("Path must be a local Uri.");
+            throw new IOException("File path was found, but path must be a local URI.");
+        }
+
+        final File file = new File(path);
+
+        if (!file.exists()) {
+
+            throw new IOException("File path was found, but file does not exist.");
         }
 
         return new File(path);
