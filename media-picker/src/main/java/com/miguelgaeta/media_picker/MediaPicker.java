@@ -1,11 +1,13 @@
 package com.miguelgaeta.media_picker;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+
+import com.android.camera.CropImageIntentBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -128,6 +130,48 @@ public class MediaPicker {
     }
 
     /**
+     * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, StartResult)
+     */
+    @SuppressWarnings("unused")
+    private static void startForImageCrop(final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final StartResult result) {
+
+        startForImageCrop(null, fragment, uri, outputWidth, outputHeight, colorInt, result);
+    }
+
+    /**
+     * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, StartResult)
+     */
+    @SuppressWarnings("unused")
+    private static void startForImageCrop(final Activity activity, final Uri uri, int outputWidth, int outputHeight, int colorInt, final StartResult result) {
+
+        startForImageCrop(activity, null, uri, outputWidth, outputHeight, colorInt, result);
+    }
+
+    private static void startForImageCrop(final Activity activity, final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final StartResult result) {
+
+        try {
+
+            captureFileURI = Uri.fromFile(MediaPickerFile.create());
+
+            final CropImageIntentBuilder intentBuilder = new CropImageIntentBuilder(outputWidth, outputHeight, captureFileURI);
+
+            intentBuilder.setSourceImage(uri);
+            intentBuilder.setDoFaceDetection(false);
+            intentBuilder.setOutlineCircleColor(colorInt);
+            intentBuilder.setOutlineColor(colorInt);
+            intentBuilder.setScaleUpIfNeeded(true);
+
+            final Context context = activity != null ? activity : fragment.getContext();
+
+            startFor(activity, fragment, intentBuilder.getIntent(context), REQUEST_CROP);
+
+        } catch (IOException e) {
+
+            result.onError(e);
+        }
+    }
+
+    /**
      * Start activity for result helper that accepts both activities
      * and or fragments.
      *
@@ -147,31 +191,10 @@ public class MediaPicker {
         }
     }
 
-    /*
-    public static void startForImageCrop(@NonNull Fragment fragment, @NonNull Uri uri, @ColorRes int colorResId, Action1<Void> onError) {
+    public static void handleActivityResult(final Context context, final int requestCode, final int resultCode, final Intent data, final Result result) {
 
-        captureFileURI = Uri.fromFile(MediaPickerFile.create());
-
-        startForIntent(null, fragment, file -> {
-
-            CropImageIntentBuilder intentBuilder = new CropImageIntentBuilder(128, 128, Uri.fromFile(file));
-
-            final int color = MGColor.fromResource(fragment.getContext(), colorResId);
-
-            intentBuilder.setSourceImage(uri);
-            intentBuilder.setDoFaceDetection(true);
-            intentBuilder.setOutlineCircleColor(color);
-            intentBuilder.setOutlineColor(color);
-            intentBuilder.setScaleUpIfNeeded(true);
-
-            return intentBuilder.getIntent(fragment.getActivity());
-
-        }, REQUEST_CROP, onError);
-    }*/
-
-
-    public static void handleActivityResult(final Context context, final int requestCode, final int resultCode, final Intent data, final HandleResult result) {
-
+        result.onError(null);
+        result.onSuccess(null);
     }
 
     /*
@@ -228,13 +251,13 @@ public class MediaPicker {
 
     public interface StartResult {
 
-        void onError(IOException error);
+        void onError(final IOException e);
     }
 
-    public interface HandleResult {
+    public interface Result {
 
-        void onError(IOException error);
+        void onError(final IOException e);
 
-        void onSuccess(File mediaFile);
+        void onSuccess(final File mediaFile);
     }
 }
