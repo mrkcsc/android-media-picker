@@ -20,7 +20,7 @@ public class MediaPickerFile {
      *
      * @throws IOException
      */
-    private static File create(final String directory, final String name, final String suffix) throws IOException {
+    public static File create(final String directory, final String name, final String suffix) throws IOException {
 
         final File dir = new File(Environment.getExternalStorageDirectory() + File.separator + directory);
 
@@ -40,7 +40,7 @@ public class MediaPickerFile {
     /**
      * @see #create(String, String, String)
      */
-    private static File create(final String directory, final String name) throws IOException {
+    public static File create(final String directory, final String name) throws IOException {
 
         return create(directory, name, null);
     }
@@ -48,7 +48,7 @@ public class MediaPickerFile {
     /**
      * @see #create(String, String)
      */
-    private static File create(final String directory) throws IOException {
+    public static File create(final String directory) throws IOException {
 
         return create(directory, UUID.randomUUID().toString());
     }
@@ -56,7 +56,7 @@ public class MediaPickerFile {
     /**
      * @see #create(String)
      */
-    private static File create() throws IOException {
+    public static File create() throws IOException {
 
         return create("media_picker");
     }
