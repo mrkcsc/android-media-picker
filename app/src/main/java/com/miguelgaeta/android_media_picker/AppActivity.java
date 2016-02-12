@@ -24,8 +24,6 @@ public class AppActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Log.e("MediaPicker", "On open camera clicked.");
-
                 MediaPicker.startForCamera(AppActivity.this, new MediaPicker.OnError() {
 
                     @Override
@@ -42,8 +40,6 @@ public class AppActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.e("MediaPicker", "On activity result.");
-
         MediaPicker.handleActivityResult(this, requestCode, resultCode, data, new MediaPicker.OnResult() {
 
             @Override
@@ -53,7 +49,7 @@ public class AppActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSuccess(File mediaFile) {
+            public void onSuccess(File mediaFile, @MediaPicker.Request int requestCode) {
 
                 Log.e("MediaPicker", "Got file result: " + mediaFile);
             }

@@ -11,6 +11,14 @@ import com.android.camera.CropImageIntentBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * Created by Miguel Gaeta on 2/10/16.
@@ -18,10 +26,15 @@ import java.io.IOException;
 @SuppressWarnings("UnusedDeclaration")
 public class MediaPicker {
 
-    public static final int REQUEST_CAPTURE   = 777;
-    public static final int REQUEST_GALLERY   = 779;
-    public static final int REQUEST_DOCUMENTS = 800;
-    public static final int REQUEST_CROP      = 801;
+    @Target({METHOD, PARAMETER, FIELD}) @Retention(SOURCE) @Documented
+    public @interface Request {
+
+    }
+
+    public static final @Request int REQUEST_CAPTURE   = 777;
+    public static final @Request int REQUEST_GALLERY   = 779;
+    public static final @Request int REQUEST_DOCUMENTS = 800;
+    public static final @Request int REQUEST_CROP      = 801;
 
     @SuppressWarnings("FieldCanBeLocal")
     private static Uri captureFileURI;
@@ -201,7 +214,7 @@ public class MediaPicker {
 
                 case Activity.RESULT_OK:
 
-                    result.onSuccess(MediaPickerUri.resolveToFile(context, handleActivityUriResult(requestCode, data)));
+                    result.onSuccess(MediaPickerUri.resolveToFile(context, handleActivityUriResult(requestCode, data)), requestCode);
 
                     break;
 
@@ -272,7 +285,7 @@ public class MediaPicker {
      */
     public interface OnResult extends OnError {
 
-        void onSuccess(final File mediaFile);
+        void onSuccess(final File mediaFile, @Request int requestCode);
 
         void onCancelled();
 
