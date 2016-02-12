@@ -14,6 +14,8 @@ task androidJavadocs(type: Javadoc) {
 
     //noinspection GroovyAssignabilityCheck
     classpath += files(ext.androidJar)
+
+    failOnError = false
 }
 
 task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
