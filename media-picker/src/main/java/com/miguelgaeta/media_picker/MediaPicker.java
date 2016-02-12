@@ -66,11 +66,6 @@ public class MediaPicker {
         }
     }
 
-    private interface IntentModifier {
-
-        void modify(final Intent intent);
-    }
-
     /**
      * @see #startForCamera(Activity, Fragment, OnError)
      */
