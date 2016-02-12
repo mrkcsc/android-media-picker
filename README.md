@@ -12,6 +12,95 @@ compile 'com.miguelgaeta.android-media-picker:media-picker:1.1.0'
 
 ```
 
+### Usage
+
+Open media chooser - presents the user with a chooser showing all matching activities for picking media:
+
+```java
+
+    MediaPicker.openMediaChooser(Activity activity, MediaPicker.OnError result);
+    MediaPicker.openMediaChooser(Fragment fragment, MediaPicker.OnError result);
+
+```
+
+Choosing media from camera:
+
+```java
+
+    MediaPicker.startForCamera(Activity activity, MediaPicker.OnError result);
+    MediaPicker.startForCamera(Fragment fragment, MediaPicker.OnError result);
+
+```
+
+Choosing media from gallery:
+
+```java
+
+    MediaPicker.startForGallery(Activity activity, MediaPicker.OnError result);
+    MediaPicker.startForGallery(Fragment fragment, MediaPicker.OnError result);
+
+```
+
+Choosing media from documents:
+
+```java
+
+    MediaPicker.startForDocuments(Activity activity, MediaPicker.OnError result);
+    MediaPicker.startForDocuments(Fragment fragment, MediaPicker.OnError result);
+
+```
+
+Handling media result:
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    MediaPicker.handleActivityResult(this, requestCode, resultCode, data, new MediaPicker.OnResult() {
+
+        @Override
+        public void onError(IOException e) {
+
+            Log.e("MediaPicker", "Got file error.", e);
+        }
+
+        @Override
+        public void onSuccess(File mediaFile, MediaPickerRequest request) {
+
+            Log.e("MediaPicker", "Got file result: " + mediaFile + " for code: " + request);
+        }
+
+        @Override
+        public void onCancelled() {
+
+            Log.e("MediaPicker", "Got cancelled event.");
+        }
+    });
+}
+```
+
+### Configuration
+
+This library provides image cropping functionality via a dependency to Lorenzo Villani's [Crop Image](https://github.com/lvillani/android-cropimage).  When including this library add his repository to your `build.gradle` to obtain the dependency.
+
+```groovy
+
+allprojects {
+
+    repositories {
+        jcenter()
+
+        maven {
+            url 'http://lorenzo.villani.me/android-cropimage/'
+        }
+    }
+}
+
+```
+
+For operations that require it, `WRITE_EXTERNAL_STORAGE` permission is added to the merged [Manifest](http://developer.android.com/guide/topics/manifest/manifest-intro.html).  You do not need to add this permission into your own manifest.
+
 ### License
 
 *Copyright 2015 Miguel Gaeta*
