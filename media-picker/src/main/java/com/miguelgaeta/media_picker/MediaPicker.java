@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 
 import com.android.camera.CropImageIntentBuilder;
@@ -31,11 +32,27 @@ public class MediaPicker {
     }
 
     /**
+     * @see #openMediaChooser(Activity, String, OnError)
+     */
+    public static void openMediaChooser(final Activity activity, @StringRes final int title, final OnError result) {
+
+        openMediaChooser(activity, activity.getString(title), result);
+    }
+
+    /**
      * @see #openMediaChooser(Activity, Fragment, String, OnError)
      */
     public static void openMediaChooser(final Fragment fragment, final String title, final OnError result) {
 
         openMediaChooser(null, fragment, title, result);
+    }
+
+    /**
+     * @see #openMediaChooser(Fragment, String, OnError)
+     */
+    public static void openMediaChooser(final Fragment fragment, @StringRes final int title, final OnError result) {
+
+        openMediaChooser(fragment, fragment.getString(title), result);
     }
 
     /**
