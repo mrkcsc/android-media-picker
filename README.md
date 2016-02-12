@@ -8,7 +8,7 @@ A utility library that allows a user to easily take a picture from the gallery, 
 
 ```groovy
 
-compile 'com.miguelgaeta.android-media-picker:media-picker:1.1.1'
+compile 'com.miguelgaeta.android-media-picker:media-picker:1.1.2'
 
 ```
 

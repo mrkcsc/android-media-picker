@@ -1,3 +1,7 @@
+## 1.1.2 - 2016-02-12
+
+- Allow string resource id for the chooser title.
+
 ## 1.1.1 - 2016-02-12
 
 - Made base document chooser method private.
