@@ -2,6 +2,7 @@ package com.miguelgaeta.media_picker;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -69,6 +70,24 @@ public class MediaPickerUri {
         }
 
         return new File(path);
+    }
+
+    /**
+     * @see #resolveToFile(Context, Uri)
+     */
+    public static File resolveToFile(final Context context, final Intent intentUri, final String name) throws IOException {
+
+        final Uri uri = intentUri.getParcelableExtra(name);
+
+        return resolveToFile(context, uri);
+    }
+
+    /**
+     * @see #resolveToFile(Context, Uri)
+     */
+    public static File resolveToFile(final Context context, final Intent intentUri) throws IOException {
+
+        return resolveToFile(context, intentUri, Intent.EXTRA_STREAM);
     }
 
     /**
@@ -178,8 +197,7 @@ public class MediaPickerUri {
      *
      * @return The value of the _data column, which is typically a file path.
      */
-    private static String getDataColumn(Context context, Uri uri, String selection,
-                                       String[] selectionArgs) {
+    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
 
         Cursor cursor = null;
 
@@ -190,12 +208,11 @@ public class MediaPickerUri {
 
         try {
 
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                null);
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+
             if (cursor != null && cursor.moveToFirst()) {
 
-                final int column_index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(column_index);
+                return cursor.getString(cursor.getColumnIndexOrThrow(column));
             }
 
         } finally {
