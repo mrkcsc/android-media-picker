@@ -44,6 +44,15 @@ public class AppActivity extends AppCompatActivity {
                 MediaPicker.startForGallery(AppActivity.this);
             }
         });
+
+        findViewById(R.id.activity_open_documents).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                MediaPicker.startForDocuments(AppActivity.this);
+            }
+        });
     }
 
     @Override
