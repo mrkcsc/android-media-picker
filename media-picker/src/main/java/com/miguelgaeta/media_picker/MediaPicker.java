@@ -26,19 +26,19 @@ public class MediaPicker {
     private static Uri captureFileURI;
 
     /**
-     * @see #startForCamera(Activity, Fragment, StartResult)
+     * @see #startForCamera(Activity, Fragment, OnError)
      */
     @SuppressWarnings("unused")
-    public static void startForCamera(final Activity activity, final StartResult result) {
+    public static void startForCamera(final Activity activity, final OnError result) {
 
         startForCamera(activity, null, result);
     }
 
     /**
-     * @see #startForCamera(Activity, Fragment, StartResult)
+     * @see #startForCamera(Activity, Fragment, OnError)
      */
     @SuppressWarnings("unused")
-    public static void startForCamera(final Fragment fragment, final StartResult result) {
+    public static void startForCamera(final Fragment fragment, final OnError result) {
 
         startForCamera(null, fragment, result);
     }
@@ -51,7 +51,7 @@ public class MediaPicker {
      *
      * @param result The camera open action can fail so capture the result.
      */
-    private static void startForCamera(final Activity activity, final Fragment fragment, final StartResult result) {
+    private static void startForCamera(final Activity activity, final Fragment fragment, final OnError result) {
 
         try {
 
@@ -130,24 +130,24 @@ public class MediaPicker {
     }
 
     /**
-     * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, StartResult)
+     * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, OnError)
      */
     @SuppressWarnings("unused")
-    private static void startForImageCrop(final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final StartResult result) {
+    private static void startForImageCrop(final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
 
         startForImageCrop(null, fragment, uri, outputWidth, outputHeight, colorInt, result);
     }
 
     /**
-     * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, StartResult)
+     * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, OnError)
      */
     @SuppressWarnings("unused")
-    private static void startForImageCrop(final Activity activity, final Uri uri, int outputWidth, int outputHeight, int colorInt, final StartResult result) {
+    private static void startForImageCrop(final Activity activity, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
 
         startForImageCrop(activity, null, uri, outputWidth, outputHeight, colorInt, result);
     }
 
-    private static void startForImageCrop(final Activity activity, final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final StartResult result) {
+    private static void startForImageCrop(final Activity activity, final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
 
         try {
 
@@ -191,73 +191,114 @@ public class MediaPicker {
         }
     }
 
-    public static void handleActivityResult(final Context context, final int requestCode, final int resultCode, final Intent data, final Result result) {
+    /**
+     * Handle result of one of the defined start actions.
+     *
+     * @param context Used to resolve resulting file.
+     * @param requestCode Request code, should be defined.
+     * @param resultCode Result code.
+     * @param data Data containing the result.
+     * @param result Result callbacks.
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    public static void handleActivityResult(final Context context, final int requestCode, final int resultCode, final Intent data, final OnResult result) {
 
-        result.onError(null);
-        result.onSuccess(null);
-    }
+        try {
 
-    /*
-    public Observable<FileResult> handleResult(@NonNull Context context, int requestCode, int resultCode, Intent data) {
+            switch (resultCode) {
 
-        return Observable.create(subscriber -> {
+                case Activity.RESULT_OK:
 
-            Uri uri = null;
+                    result.onSuccess(MediaPickerUri.resolveToFile(context, handleActivityUriResult(requestCode, data)));
 
-            if (resultCode == Activity.RESULT_OK) {
+                    break;
 
-                switch (requestCode) {
+                case Activity.RESULT_CANCELED:
 
-                    case REQUEST_CAPTURE:
-                    case REQUEST_CROP:
+                    result.onCancelled();
 
-                        uri = fileUri;
+                    break;
 
-                        break;
+                default:
 
-                    case REQUEST_GALLERY:
-
-                        if (data != null) {
-
-                            uri = data.getData();
-                        }
-
-                        break;
-                }
+                    throw new IOException("Bad activity result code: " + resultCode + ", for request code: " + requestCode);
             }
 
-            if (uri != null) {
+        } catch (IOException e) {
 
-                File file = MediaPickerUriResolver.getFile(context, uri);
+            result.onError(e);
+        }
+    }
 
-                if (file != null && file.exists()) {
+    /**
+     * Given a request code and a data result intent from an activity, attempt to
+     * extract the returned file URI.
+     *
+     * @param requestCode Source request code, should be library defined.
+     * @param data Data result intent.
+     *
+     * @return File URI.
+     *
+     * @throws IOException
+     */
+    private static Uri handleActivityUriResult(final int requestCode, final Intent data) throws IOException {
 
-                    subscriber.onNext(FileResult.create(new TypedFile(MediaPickerUriResolver.getMimeType(file), file), FileResult.Status.OK));
+        switch (requestCode) {
 
-                } else {
+            case REQUEST_CAPTURE:
+            case REQUEST_CROP:
 
-                    subscriber.onNext(FileResult.create(null, FileResult.Status.FILE_NOT_FOUND));
+                if (captureFileURI == null) {
+
+                    throw new IOException("Capture result file data not found.");
                 }
 
-            } else  {
+                return captureFileURI;
+        }
 
-                subscriber.onNext(FileResult.create(null, FileResult.Status.URI_NOT_FOUND));
-            }
+        if (data == null || data.getData() == null) {
 
-            subscriber.onCompleted();
-        });
+            throw new IOException("Picker returned no data result.");
+        }
+
+        return data.getData();
     }
-    */
 
-    public interface StartResult {
+    /**
+     * Invoked when any sort of input or output error occurs.  In the case of
+     * the media picker this is most likely to be a result of a bad
+     * file path or invalid file itself.
+     */
+    public interface OnError {
 
         void onError(final IOException e);
     }
 
-    public interface Result {
-
-        void onError(final IOException e);
+    /**
+     * Complete result callback, can also throw IO errors or
+     * a cancellation result from the user.
+     */
+    public interface OnResult extends OnError {
 
         void onSuccess(final File mediaFile);
+
+        void onCancelled();
+
+        /**
+         * Most consumers only care about the success callback.
+         */
+        @SuppressWarnings("unused")
+        abstract class Default implements OnResult {
+
+            @Override
+            public void onCancelled() {
+
+            }
+
+            @Override
+            public void onError(IOException e) {
+
+            }
+        }
     }
 }
