@@ -1,12 +1,9 @@
 package com.miguelgaeta.media_picker;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 
@@ -14,8 +11,6 @@ import com.android.camera.CropImageIntentBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Miguel Gaeta on 2/10/16.
@@ -42,13 +37,26 @@ public class MediaPicker {
         openMediaChooser(null, fragment, title, result);
     }
 
+    /**
+     * Create a chooser intent that matches all types of activities
+     * for taking photos or selecting media.
+     *
+     * @param activity Source {@link Activity}.
+     * @param fragment Source {@link Fragment}.
+     *
+     * @param title Chooser title.
+     *
+     * @param result Can fail to create the file needed for the camera intents.
+     */
     public static void openMediaChooser(final Activity activity, final Fragment fragment, final String title, final OnError result) {
 
         try {
 
             final Context context = activity != null ? activity : fragment.getContext();
 
-            final Intent intent = getMediaChooserIntent(context, title);
+            captureFileURI = Uri.fromFile(MediaPickerFile.createWithSuffix(".jpg"));
+
+            final Intent intent = MediaPickerChooser.getMediaChooserIntent(context.getPackageManager(), title, captureFileURI);
 
             startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_CHOOSER.getCode());
 
@@ -58,41 +66,9 @@ public class MediaPicker {
         }
     }
 
-    private static Intent getMediaChooserIntent(Context context, String chooserTitle) throws IOException {
+    private interface IntentModifier {
 
-        captureFileURI = Uri.fromFile(MediaPickerFile.createWithSuffix(".jpg"));
-
-        final List<Intent> cameraIntents = new ArrayList<>();
-
-        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-
-        for (ResolveInfo res : context.getPackageManager().queryIntentActivities(captureIntent, 0)) {
-
-            final ComponentName componentName = new ComponentName(res.activityInfo.packageName, res.activityInfo.name);
-
-            final Intent intent = new Intent(captureIntent);
-
-            intent.setComponent(componentName);
-            intent.setPackage(res.activityInfo.packageName);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI);
-
-            cameraIntents.add(intent);
-        }
-
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-        /*
-        if (showGallery) {
-            galleryIntent = createGalleryIntent(context, type);
-        } else {
-            galleryIntent = createDocumentsIntent(context, type);
-        }
-        */
-
-        Intent chooserIntent = Intent.createChooser(galleryIntent, chooserTitle);
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
-
-        return chooserIntent;
+        void modify(final Intent intent);
     }
 
     /**
@@ -183,8 +159,8 @@ public class MediaPicker {
     /**
      * Start the documents chooser directly.
      *
-     * @param activity Source activity.
-     * @param fragment Source fragment.
+     * @param activity Source {@link Activity}.
+     * @param fragment Source {@link Fragment}.
      */
     private static void startForDocuments(final Activity activity, final Fragment fragment) {
 
