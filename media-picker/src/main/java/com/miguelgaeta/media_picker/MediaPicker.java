@@ -54,7 +54,7 @@ public class MediaPicker {
 
         try {
 
-            captureFileURI = Uri.fromFile(MediaPickerFile.create());
+            captureFileURI = Uri.fromFile(MediaPickerFile.createWithSuffix(".jpg"));
 
             final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI);
 
@@ -144,7 +144,7 @@ public class MediaPicker {
 
         try {
 
-            captureFileURI = Uri.fromFile(MediaPickerFile.create());
+            captureFileURI = Uri.fromFile(MediaPickerFile.createWithSuffix(".jpg"));
 
             final CropImageIntentBuilder intentBuilder = new CropImageIntentBuilder(outputWidth, outputHeight, captureFileURI);
 

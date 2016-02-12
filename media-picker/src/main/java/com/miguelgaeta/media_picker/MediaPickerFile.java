@@ -67,4 +67,12 @@ public class MediaPickerFile {
 
         return create("media_picker");
     }
+
+    /**
+     * @see #create(String, String, String)
+     */
+    public static File createWithSuffix(final String suffix) throws IOException {
+
+        return create("media_picker", UUID.randomUUID().toString(), suffix);
+    }
 }
