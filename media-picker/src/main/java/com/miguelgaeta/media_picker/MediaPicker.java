@@ -11,30 +11,12 @@ import com.android.camera.CropImageIntentBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * Created by Miguel Gaeta on 2/10/16.
  */
 @SuppressWarnings("UnusedDeclaration")
 public class MediaPicker {
-
-    @Target({METHOD, PARAMETER, FIELD}) @Retention(SOURCE) @Documented
-    public @interface Request {
-
-    }
-
-    public static final @Request int REQUEST_CAPTURE   = 777;
-    public static final @Request int REQUEST_GALLERY   = 779;
-    public static final @Request int REQUEST_DOCUMENTS = 800;
-    public static final @Request int REQUEST_CROP      = 801;
 
     @SuppressWarnings("FieldCanBeLocal")
     private static Uri captureFileURI;
@@ -71,7 +53,7 @@ public class MediaPicker {
 
             final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI);
 
-            startFor(activity, fragment, intent, REQUEST_CAPTURE);
+            startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_CAPTURE.getCode());
 
         } catch (IOException e) {
 
@@ -105,7 +87,7 @@ public class MediaPicker {
 
         final Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-        startFor(activity, fragment, intent, REQUEST_GALLERY);
+        startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_GALLERY.getCode());
     }
 
     /**
@@ -134,7 +116,7 @@ public class MediaPicker {
 
         final Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("image/*");
 
-        startFor(activity, fragment, intent, REQUEST_DOCUMENTS);
+        startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_DOCUMENTS.getCode());
     }
 
     /**
@@ -169,7 +151,7 @@ public class MediaPicker {
 
             final Context context = activity != null ? activity : fragment.getContext();
 
-            startFor(activity, fragment, intentBuilder.getIntent(context), REQUEST_CROP);
+            startFor(activity, fragment, intentBuilder.getIntent(context), MediaPickerRequest.REQUEST_CROP.getCode());
 
         } catch (IOException e) {
 
@@ -208,13 +190,20 @@ public class MediaPicker {
      */
     public static void handleActivityResult(final Context context, final int requestCode, final int resultCode, final Intent data, final OnResult result) {
 
+        final MediaPickerRequest request = MediaPickerRequest.create(requestCode);
+
+        if (request == null) {
+
+            return;
+        }
+
         try {
 
             switch (resultCode) {
 
                 case Activity.RESULT_OK:
 
-                    result.onSuccess(MediaPickerUri.resolveToFile(context, handleActivityUriResult(requestCode, data)), requestCode);
+                    result.onSuccess(MediaPickerUri.resolveToFile(context, handleActivityUriResult(request, data)), request);
 
                     break;
 
@@ -239,16 +228,16 @@ public class MediaPicker {
      * Given a request code and a data result intent from an activity, attempt to
      * extract the returned file URI.
      *
-     * @param requestCode Source request code, should be library defined.
+     * @param request Source request, should be library defined.
      * @param data Data result intent.
      *
      * @return File URI.
      *
      * @throws IOException
      */
-    private static Uri handleActivityUriResult(final int requestCode, final Intent data) throws IOException {
+    private static Uri handleActivityUriResult(final MediaPickerRequest request, final Intent data) throws IOException {
 
-        switch (requestCode) {
+        switch (request) {
 
             case REQUEST_CAPTURE:
             case REQUEST_CROP:
@@ -285,7 +274,7 @@ public class MediaPicker {
      */
     public interface OnResult extends OnError {
 
-        void onSuccess(final File mediaFile, @Request int requestCode);
+        void onSuccess(final File mediaFile, MediaPickerRequest request);
 
         void onCancelled();
 

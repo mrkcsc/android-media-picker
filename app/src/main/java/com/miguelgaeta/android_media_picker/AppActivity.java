@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.miguelgaeta.media_picker.MediaPicker;
+import com.miguelgaeta.media_picker.MediaPickerRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,9 +59,9 @@ public class AppActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSuccess(File mediaFile, @MediaPicker.Request int requestCode) {
+            public void onSuccess(File mediaFile, MediaPickerRequest request) {
 
-                Log.e("MediaPicker", "Got file result: " + mediaFile + " for code: " + requestCode);
+                Log.e("MediaPicker", "Got file result: " + mediaFile + " for code: " + request);
             }
 
             @Override
