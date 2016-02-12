@@ -8,7 +8,8 @@ public enum MediaPickerRequest {
     REQUEST_CAPTURE,
     REQUEST_GALLERY,
     REQUEST_DOCUMENTS,
-    REQUEST_CROP;
+    REQUEST_CROP,
+    REQUEST_CHOOSER;
 
     /**
      * Internally get the associated request code to used in
@@ -35,6 +36,10 @@ public enum MediaPickerRequest {
             case REQUEST_CROP:
 
                 return 800;
+
+            case REQUEST_CHOOSER:
+
+                return 801;
         }
 
         return -1;
@@ -67,6 +72,10 @@ public enum MediaPickerRequest {
             case 800:
 
                 return REQUEST_CROP;
+
+            case 801:
+
+                return REQUEST_CHOOSER;
         }
 
         return null;
