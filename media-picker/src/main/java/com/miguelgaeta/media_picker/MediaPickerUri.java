@@ -56,7 +56,7 @@ public class MediaPickerUri {
             throw new IOException("File path was not found.");
         }
 
-        if (isLocal(path)) {
+        if (!isLocal(path)) {
 
             throw new IOException("File path was found, but path must be a local URI.");
         }
