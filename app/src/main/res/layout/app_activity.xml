@@ -5,9 +5,29 @@
     android:layout_height="match_parent"
     tools:context=".AppActivity">
 
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"/>
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/activity_open_camera"
+            android:layout_width="100dp"
+            android:layout_height="25dp"
+            android:layout_marginBottom="10dp"
+            android:background="#ccc"
+            android:gravity="center"
+            android:text="Open Camera"/>
+
+        <TextView
+            android:id="@+id/activity_open_gallery"
+            android:layout_width="100dp"
+            android:layout_height="25dp"
+            android:layout_marginBottom="10dp"
+            android:background="#ccc"
+            android:gravity="center"
+            android:text="Open Gallery"/>
+    </LinearLayout>
 
 </RelativeLayout>
