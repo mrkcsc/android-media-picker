@@ -41,7 +41,14 @@ public class AppActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                MediaPicker.startForGallery(AppActivity.this);
+                MediaPicker.startForGallery(AppActivity.this, new MediaPicker.OnError() {
+
+                    @Override
+                    public void onError(IOException e) {
+
+                        Log.e("MediaPicker", "Start for gallery error.", e);
+                    }
+                });
             }
         });
 
@@ -50,7 +57,14 @@ public class AppActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                MediaPicker.startForDocuments(AppActivity.this);
+                MediaPicker.startForDocuments(AppActivity.this, new MediaPicker.OnError() {
+
+                    @Override
+                    public void onError(IOException e) {
+
+                        Log.e("MediaPicker", "Start for documents error.", e);
+                    }
+                });
             }
         });
 

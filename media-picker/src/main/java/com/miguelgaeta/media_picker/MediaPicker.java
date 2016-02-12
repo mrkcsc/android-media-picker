@@ -1,6 +1,7 @@
 package com.miguelgaeta.media_picker;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -107,19 +108,19 @@ public class MediaPicker {
     }
 
     /**
-     * @see #startForGallery(Activity, Fragment)
+     * @see #startForGallery(Activity, Fragment, OnError)
      */
-    public static void startForGallery(final Activity activity) {
+    public static void startForGallery(final Activity activity, final OnError result) {
 
-        startForGallery(activity, null);
+        startForGallery(activity, null, result);
     }
 
     /**
-     * @see #startForGallery(Activity, Fragment)
+     * @see #startForGallery(Activity, Fragment, OnError)
      */
-    public static void startForGallery(final Fragment fragment) {
+    public static void startForGallery(final Fragment fragment, final OnError result) {
 
-        startForGallery(null, fragment);
+        startForGallery(null, fragment, result);
     }
 
     /**
@@ -127,28 +128,37 @@ public class MediaPicker {
      *
      * @param activity Source {@link Activity}.
      * @param fragment Source {@link Fragment}.
+     *
+     * @param result Failure to open gallery captured in result callback..
      */
-    private static void startForGallery(final Activity activity, final Fragment fragment) {
+    private static void startForGallery(final Activity activity, final Fragment fragment, final OnError result) {
 
-        final Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        try {
 
-        startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_GALLERY.getCode());
+            final Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+            startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_GALLERY.getCode());
+
+        } catch (IOException e) {
+
+            result.onError(e);
+        }
     }
 
     /**
-     * @see #startForDocuments(Activity, Fragment)
+     * @see #startForDocuments(Activity, Fragment, OnError)
      */
-    public static void startForDocuments(final Fragment fragment) {
+    public static void startForDocuments(final Fragment fragment, final OnError result) {
 
-        startForDocuments(null, fragment);
+        startForDocuments(null, fragment, result);
     }
 
     /**
-     * @see #startForDocuments(Activity, Fragment)
+     * @see #startForDocuments(Activity, Fragment, OnError)
      */
-    public static void startForDocuments(final Activity activity) {
+    public static void startForDocuments(final Activity activity, final OnError result) {
 
-        startForDocuments(activity, null);
+        startForDocuments(activity, null, result);
     }
 
     /**
@@ -156,12 +166,23 @@ public class MediaPicker {
      *
      * @param activity Source {@link Activity}.
      * @param fragment Source {@link Fragment}.
+     *
+     * @param result The document open action can fail so capture the result.
      */
-    private static void startForDocuments(final Activity activity, final Fragment fragment) {
+    private static void startForDocuments(final Activity activity, final Fragment fragment, final OnError result) {
 
-        final Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("image/*");
+        try {
 
-        startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_DOCUMENTS.getCode());
+            final Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+
+            intent.setType("image/*");
+
+            startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_DOCUMENTS.getCode());
+
+        } catch (IOException e) {
+
+            result.onError(e);
+        }
     }
 
     /**
@@ -213,14 +234,21 @@ public class MediaPicker {
      * @param intent Source {@link Intent}
      * @param requestCode Request code for capturing result.
      */
-    private static void startFor(final Activity activity, final Fragment fragment, final Intent intent, final int requestCode) {
+    private static void startFor(final Activity activity, final Fragment fragment, final Intent intent, final int requestCode) throws IOException {
 
-        if (activity != null) {
-            activity.startActivityForResult(intent, requestCode);
-        }
+        try {
 
-        if (fragment != null) {
-            fragment.startActivityForResult(intent, requestCode);
+            if (activity != null) {
+                activity.startActivityForResult(intent, requestCode);
+            }
+
+            if (fragment != null) {
+                fragment.startActivityForResult(intent, requestCode);
+            }
+
+        } catch (ActivityNotFoundException e) {
+
+            throw new IOException("No application available for media picker.");
         }
     }
 
