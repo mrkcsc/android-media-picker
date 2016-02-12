@@ -34,6 +34,15 @@ public class AppActivity extends AppCompatActivity {
                 });
             }
         });
+
+        findViewById(R.id.activity_open_gallery).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                MediaPicker.startForGallery(AppActivity.this);
+            }
+        });
     }
 
     @Override
@@ -51,7 +60,7 @@ public class AppActivity extends AppCompatActivity {
             @Override
             public void onSuccess(File mediaFile, @MediaPicker.Request int requestCode) {
 
-                Log.e("MediaPicker", "Got file result: " + mediaFile);
+                Log.e("MediaPicker", "Got file result: " + mediaFile + " for code: " + requestCode);
             }
 
             @Override
