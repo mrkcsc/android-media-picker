@@ -73,7 +73,7 @@ public class AppActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                MediaPicker.openMediaChooser(AppActivity.this, null, "Choose now", new MediaPicker.OnError() {
+                MediaPicker.openMediaChooser(AppActivity.this, "Choose now", new MediaPicker.OnError() {
 
                     @Override
                     public void onError(IOException e) {

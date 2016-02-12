@@ -49,7 +49,7 @@ public class MediaPicker {
      *
      * @param result Can fail to create the file needed for the camera intents.
      */
-    public static void openMediaChooser(final Activity activity, final Fragment fragment, final String title, final OnError result) {
+    private static void openMediaChooser(final Activity activity, final Fragment fragment, final String title, final OnError result) {
 
         try {
 
