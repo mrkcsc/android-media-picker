@@ -93,7 +93,7 @@ public class MediaPicker {
     /**
      * @see #startForDocuments(Activity, Fragment)
      */
-    private static void startForDocuments(final Fragment fragment) {
+    public static void startForDocuments(final Fragment fragment) {
 
         startForDocuments(null, fragment);
     }
@@ -101,7 +101,7 @@ public class MediaPicker {
     /**
      * @see #startForDocuments(Activity, Fragment)
      */
-    private static void startForDocuments(final Activity activity) {
+    public static void startForDocuments(final Activity activity) {
 
         startForDocuments(activity, null);
     }
