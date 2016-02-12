@@ -53,6 +53,22 @@ public class AppActivity extends AppCompatActivity {
                 MediaPicker.startForDocuments(AppActivity.this);
             }
         });
+
+        findViewById(R.id.activity_open_chooser).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                MediaPicker.openMediaChooser(AppActivity.this, null, "Choose now", new MediaPicker.OnError() {
+
+                    @Override
+                    public void onError(IOException e) {
+
+                        Log.e("MediaPicker", "Open chooser error.", e);
+                    }
+                });
+            }
+        });
     }
 
     @Override

@@ -1,9 +1,12 @@
 package com.miguelgaeta.media_picker;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 
@@ -11,6 +14,8 @@ import com.android.camera.CropImageIntentBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Miguel Gaeta on 2/10/16.
@@ -20,6 +25,75 @@ public class MediaPicker {
 
     @SuppressWarnings("FieldCanBeLocal")
     private static Uri captureFileURI;
+
+    /**
+     * @see #openMediaChooser(Activity, Fragment, String, OnError)
+     */
+    public static void openMediaChooser(final Activity activity, final String title, final OnError result) {
+
+        openMediaChooser(activity, null, title, result);
+    }
+
+    /**
+     * @see #openMediaChooser(Activity, Fragment, String, OnError)
+     */
+    public static void openMediaChooser(final Fragment fragment, final String title, final OnError result) {
+
+        openMediaChooser(null, fragment, title, result);
+    }
+
+    public static void openMediaChooser(final Activity activity, final Fragment fragment, final String title, final OnError result) {
+
+        try {
+
+            final Context context = activity != null ? activity : fragment.getContext();
+
+            final Intent intent = getMediaChooserIntent(context, title);
+
+            startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_CHOOSER.getCode());
+
+        } catch (IOException e) {
+
+            result.onError(e);
+        }
+    }
+
+    private static Intent getMediaChooserIntent(Context context, String chooserTitle) throws IOException {
+
+        captureFileURI = Uri.fromFile(MediaPickerFile.createWithSuffix(".jpg"));
+
+        final List<Intent> cameraIntents = new ArrayList<>();
+
+        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+        for (ResolveInfo res : context.getPackageManager().queryIntentActivities(captureIntent, 0)) {
+
+            final ComponentName componentName = new ComponentName(res.activityInfo.packageName, res.activityInfo.name);
+
+            final Intent intent = new Intent(captureIntent);
+
+            intent.setComponent(componentName);
+            intent.setPackage(res.activityInfo.packageName);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI);
+
+            cameraIntents.add(intent);
+        }
+
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        /*
+        if (showGallery) {
+            galleryIntent = createGalleryIntent(context, type);
+        } else {
+            galleryIntent = createDocumentsIntent(context, type);
+        }
+        */
+
+        Intent chooserIntent = Intent.createChooser(galleryIntent, chooserTitle);
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
+
+        return chooserIntent;
+    }
 
     /**
      * @see #startForCamera(Activity, Fragment, OnError)

@@ -40,6 +40,16 @@
             android:gravity="center"
             android:textSize="12sp"
             android:text="Open Documents"/>
+
+        <TextView
+            android:id="@+id/activity_open_chooser"
+            android:layout_width="125dp"
+            android:layout_height="25dp"
+            android:layout_marginBottom="10dp"
+            android:background="#ccc"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:text="Open Chooser"/>
     </LinearLayout>
 
 </RelativeLayout>
