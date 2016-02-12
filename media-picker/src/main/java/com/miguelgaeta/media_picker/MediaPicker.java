@@ -15,6 +15,7 @@ import java.io.IOException;
 /**
  * Created by Miguel Gaeta on 2/10/16.
  */
+@SuppressWarnings("UnusedDeclaration")
 public class MediaPicker {
 
     public static final int REQUEST_CAPTURE   = 777;
@@ -28,7 +29,6 @@ public class MediaPicker {
     /**
      * @see #startForCamera(Activity, Fragment, OnError)
      */
-    @SuppressWarnings("unused")
     public static void startForCamera(final Activity activity, final OnError result) {
 
         startForCamera(activity, null, result);
@@ -37,7 +37,6 @@ public class MediaPicker {
     /**
      * @see #startForCamera(Activity, Fragment, OnError)
      */
-    @SuppressWarnings("unused")
     public static void startForCamera(final Fragment fragment, final OnError result) {
 
         startForCamera(null, fragment, result);
@@ -70,7 +69,6 @@ public class MediaPicker {
     /**
      * @see #startForGallery(Activity, Fragment)
      */
-    @SuppressWarnings("unused")
     public static void startForGallery(final Activity activity) {
 
         startForGallery(activity, null);
@@ -79,7 +77,6 @@ public class MediaPicker {
     /**
      * @see #startForGallery(Activity, Fragment)
      */
-    @SuppressWarnings("unused")
     public static void startForGallery(final Fragment fragment) {
 
         startForGallery(null, fragment);
@@ -101,7 +98,6 @@ public class MediaPicker {
     /**
      * @see #startForDocuments(Activity, Fragment)
      */
-    @SuppressWarnings("unused")
     private static void startForDocuments(final Fragment fragment) {
 
         startForDocuments(null, fragment);
@@ -110,7 +106,6 @@ public class MediaPicker {
     /**
      * @see #startForDocuments(Activity, Fragment)
      */
-    @SuppressWarnings("unused")
     private static void startForDocuments(final Activity activity) {
 
         startForDocuments(activity, null);
@@ -132,7 +127,6 @@ public class MediaPicker {
     /**
      * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, OnError)
      */
-    @SuppressWarnings("unused")
     private static void startForImageCrop(final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
 
         startForImageCrop(null, fragment, uri, outputWidth, outputHeight, colorInt, result);
@@ -141,7 +135,6 @@ public class MediaPicker {
     /**
      * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, OnError)
      */
-    @SuppressWarnings("unused")
     private static void startForImageCrop(final Activity activity, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
 
         startForImageCrop(activity, null, uri, outputWidth, outputHeight, colorInt, result);
@@ -200,7 +193,6 @@ public class MediaPicker {
      * @param data Data containing the result.
      * @param result Result callbacks.
      */
-    @SuppressWarnings("UnusedDeclaration")
     public static void handleActivityResult(final Context context, final int requestCode, final int resultCode, final Intent data, final OnResult result) {
 
         try {
@@ -287,7 +279,6 @@ public class MediaPicker {
         /**
          * Most consumers only care about the success callback.
          */
-        @SuppressWarnings("unused")
         abstract class Default implements OnResult {
 
             @Override
