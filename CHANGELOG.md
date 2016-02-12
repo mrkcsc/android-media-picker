@@ -1,3 +1,7 @@
+## 1.1.3 - 2016-02-12
+
+- Add overloads to `MediaPickerUri`
+
 ## 1.1.2 - 2016-02-12
 
 - Allow string resource id for the chooser title.
