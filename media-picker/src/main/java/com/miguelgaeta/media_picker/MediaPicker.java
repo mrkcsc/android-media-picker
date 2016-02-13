@@ -211,11 +211,27 @@ public class MediaPicker {
     }
 
     /**
+     * @see #startForImageCrop(Fragment, File, int, int, int, OnError)
+     */
+    public static void startForImageCrop(final Fragment fragment, final File file, int outputWidth, int outputHeight, int colorInt, final OnError result) {
+
+        startForImageCrop(fragment, Uri.fromFile(file), outputWidth, outputHeight, colorInt, result);
+    }
+
+    /**
      * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, OnError)
      */
     public static void startForImageCrop(final Activity activity, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
 
         startForImageCrop(activity, null, uri, outputWidth, outputHeight, colorInt, result);
+    }
+
+    /**
+     * @see #startForImageCrop(Activity, File, int, int, int, OnError)
+     */
+    public static void startForImageCrop(final Activity activity, final File file, int outputWidth, int outputHeight, int colorInt, final OnError result) {
+
+        startForImageCrop(activity, null, Uri.fromFile(file), outputWidth, outputHeight, colorInt, result);
     }
 
     /**
