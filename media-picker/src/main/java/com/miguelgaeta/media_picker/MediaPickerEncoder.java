@@ -72,7 +72,7 @@ public class MediaPickerEncoder {
         }
 
         final BitmapFactory.Options opt = new BitmapFactory.Options();
-        final Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+        final Bitmap bitmap = BitmapFactory.decodeFile(filePath, opt);
 
         return toDataUrl(bitmap, mimeType != null ? mimeType : opt.outMimeType, format, quality);
     }

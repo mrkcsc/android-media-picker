@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.miguelgaeta.media_picker.MediaPicker;
+import com.miguelgaeta.media_picker.MediaPickerEncoder;
 import com.miguelgaeta.media_picker.MediaPickerRequest;
 
 import java.io.File;
@@ -117,6 +118,18 @@ public class AppActivity extends AppCompatActivity {
                             Log.e("MediaPicker", "Open cropper error.", e);
                         }
                     });
+
+                } else {
+
+                    try {
+
+                        @SuppressWarnings("unused")
+                        final String dataUrl = MediaPickerEncoder.toDataUrl(mediaFile);
+
+                    } catch (IOException e) {
+
+                        Log.e("MediaPicker", "Unable to get data url.", e);
+                    }
                 }
             }
 
