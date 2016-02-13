@@ -205,7 +205,7 @@ public class MediaPicker {
     /**
      * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, OnError)
      */
-    private static void startForImageCrop(final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
+    public static void startForImageCrop(final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
 
         startForImageCrop(null, fragment, uri, outputWidth, outputHeight, colorInt, result);
     }
@@ -213,11 +213,22 @@ public class MediaPicker {
     /**
      * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, OnError)
      */
-    private static void startForImageCrop(final Activity activity, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
+    public static void startForImageCrop(final Activity activity, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
 
         startForImageCrop(activity, null, uri, outputWidth, outputHeight, colorInt, result);
     }
 
+    /**
+     * Start activity for cropping.
+     *
+     * @param activity Source {@link Activity}.
+     * @param fragment Source {@link Fragment}.
+     * @param uri Source file URI.
+     * @param outputWidth Cropped file output width.
+     * @param outputHeight Cropped file output height.
+     * @param colorInt Cropping UI circle color.
+     * @param result Result callbacks.
+     */
     private static void startForImageCrop(final Activity activity, final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
 
         try {
