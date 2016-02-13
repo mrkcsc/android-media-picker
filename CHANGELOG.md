@@ -1,3 +1,7 @@
+## 1.2.0 - 2016-02-12
+
+- Expose cropping API.
+
 ## 1.1.3 - 2016-02-12
 
 - Add overloads to `MediaPickerUri`
