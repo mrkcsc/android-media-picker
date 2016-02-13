@@ -2,6 +2,7 @@ package com.miguelgaeta.android_media_picker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -101,6 +102,22 @@ public class AppActivity extends AppCompatActivity {
             public void onSuccess(File mediaFile, MediaPickerRequest request) {
 
                 Log.e("MediaPicker", "Got file result: " + mediaFile + " for code: " + request);
+
+                if (request != MediaPickerRequest.REQUEST_CROP) {
+
+                    final int paramColor = ContextCompat.getColor(AppActivity.this, android.R.color.black);
+                    final int paramWidth = 128;
+                    final int paramHeight = 128;
+
+                    MediaPicker.startForImageCrop(AppActivity.this, mediaFile, paramWidth, paramHeight, paramColor, new MediaPicker.OnError() {
+
+                        @Override
+                        public void onError(IOException e) {
+
+                            Log.e("MediaPicker", "Open cropper error.", e);
+                        }
+                    });
+                }
             }
 
             @Override
