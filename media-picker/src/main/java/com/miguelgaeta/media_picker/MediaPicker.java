@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.StringRes;
@@ -20,8 +21,7 @@ import java.io.IOException;
 @SuppressWarnings("UnusedDeclaration")
 public class MediaPicker {
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private static Uri captureFileURI;
+    static final String NAME = "media_picker";
 
     /**
      * @see #openMediaChooser(Activity, Fragment, String, OnError)
@@ -72,7 +72,7 @@ public class MediaPicker {
 
             final Context context = activity != null ? activity : fragment.getContext();
 
-            captureFileURI = Uri.fromFile(MediaPickerFile.createWithSuffix(".jpg"));
+            final Uri captureFileURI = createTempImageFileAndPersistUri(activity, fragment);
 
             final Intent intent = MediaPickerChooser.getMediaChooserIntent(context.getPackageManager(), title, captureFileURI);
 
@@ -112,7 +112,7 @@ public class MediaPicker {
 
         try {
 
-            captureFileURI = Uri.fromFile(MediaPickerFile.createWithSuffix(".jpg"));
+            final Uri captureFileURI = createTempImageFileAndPersistUri(activity, fragment);
 
             final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI);
 
@@ -249,7 +249,7 @@ public class MediaPicker {
 
         try {
 
-            captureFileURI = Uri.fromFile(MediaPickerFile.createWithSuffix(".jpg"));
+            final Uri captureFileURI = createTempImageFileAndPersistUri(activity, fragment);
 
             final CropImageIntentBuilder intentBuilder = new CropImageIntentBuilder(outputWidth, outputHeight, captureFileURI);
 
@@ -320,7 +320,7 @@ public class MediaPicker {
 
                 case Activity.RESULT_OK:
 
-                    result.onSuccess(MediaPickerUri.resolveToFile(context, handleActivityUriResult(request, data)), request);
+                    result.onSuccess(MediaPickerUri.resolveToFile(context, handleActivityUriResult(context, request, data)), request);
 
                     break;
 
@@ -345,6 +345,7 @@ public class MediaPicker {
      * Given a request code and a data result intent from an activity, attempt to
      * extract the returned file URI.
      *
+     * @param context Context.
      * @param request Source request, should be library defined.
      * @param data Data result intent.
      *
@@ -352,19 +353,14 @@ public class MediaPicker {
      *
      * @throws IOException
      */
-    private static Uri handleActivityUriResult(final MediaPickerRequest request, final Intent data) throws IOException {
+    private static Uri handleActivityUriResult(final Context context, final MediaPickerRequest request, final Intent data) throws IOException {
 
         switch (request) {
 
             case REQUEST_CAPTURE:
             case REQUEST_CROP:
 
-                if (captureFileURI == null) {
-
-                    throw new IOException("Capture result file data not found.");
-                }
-
-                return captureFileURI;
+                return getCaptureFileURI(context);
         }
 
         if (data == null || data.getData() == null) {
@@ -373,6 +369,55 @@ public class MediaPicker {
         }
 
         return data.getData();
+    }
+
+    /**
+     * Create a temporary image file and persist it for later retrieval.  We use shared
+     * preferences here in the case that we lose our current
+     * instance by the time the activity returns a result.
+     *
+     * @param activity Source {@link Activity}.
+     * @param fragment Source {@link Fragment}.
+     *
+     * @return Uri of the created file.
+     *
+     * @throws IOException
+     */
+    private static Uri createTempImageFileAndPersistUri(final Activity activity, final Fragment fragment) throws IOException {
+
+        final Context context = activity != null ? activity : fragment.getContext();
+
+        final Uri captureFileURI = Uri.fromFile(MediaPickerFile.createWithSuffix(".jpg"));
+
+        final SharedPreferences sharedPreferences = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString(NAME, captureFileURI.toString());
+        editor.apply();
+
+        return captureFileURI;
+    }
+
+    /**
+     * When taking a picture from a camera or cropping, we need to store the
+     * Uri to a temporary file to be filled.  Fetch it here.
+     *
+     * @param context Application context.
+     *
+     * @return Associated file Uri.
+     *
+     * @throws IOException
+     */
+    private static Uri getCaptureFileURI(final Context context) throws IOException {
+
+        final String uriString = context.getSharedPreferences(NAME, Context.MODE_PRIVATE).getString(NAME, null);
+
+        if (uriString == null) {
+
+            throw new IOException("Capture media result file data not found.");
+        }
+
+        return Uri.parse(uriString);
     }
 
     /**
