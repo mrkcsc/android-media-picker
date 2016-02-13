@@ -1,3 +1,7 @@
+## 1.2.1 - 2016-02-12
+
+- Bug fix for encoding image file to data url.
+
 ## 1.2.0 - 2016-02-12
 
 - Expose cropping API.
