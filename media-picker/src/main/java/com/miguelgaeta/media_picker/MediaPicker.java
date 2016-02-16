@@ -355,19 +355,31 @@ public class MediaPicker {
      */
     private static Uri handleActivityUriResult(final Context context, final MediaPickerRequest request, final Intent data) throws IOException {
 
-        final Uri uri = getCaptureFileUriAndClear(context);
+        switch (request) {
 
-        if (uri != null) {
+            case REQUEST_CAPTURE:
+            case REQUEST_CROP:
 
-            return uri;
+                return getCaptureFileUriAndClear(context);
+
+            case REQUEST_DOCUMENTS:
+            case REQUEST_GALLERY:
+            case REQUEST_CHOOSER:
+
+                if (data == null) {
+
+                    return getCaptureFileUriAndClear(context);
+                }
+
+                if (data.getData() == null) {
+
+                    throw new IOException("Picker returned no data result.");
+                }
+
+                return data.getData();
         }
 
-        if (data == null || data.getData() == null) {
-
-            throw new IOException("Picker returned no data result.");
-        }
-
-        return data.getData();
+        throw new IOException("Picker returned unknown request.");
     }
 
     /**
