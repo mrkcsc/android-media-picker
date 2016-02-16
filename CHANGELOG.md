@@ -1,3 +1,4 @@
+## 1.2.3 - 2016-02-16
 ## 1.2.2 - 2016-02-16
 
 - Bug fix for camera and crop results not being captured when called with chooser request type.
