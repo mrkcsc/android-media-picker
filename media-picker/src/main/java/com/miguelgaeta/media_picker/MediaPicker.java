@@ -355,12 +355,11 @@ public class MediaPicker {
      */
     private static Uri handleActivityUriResult(final Context context, final MediaPickerRequest request, final Intent data) throws IOException {
 
-        switch (request) {
+        final Uri uri = getCaptureFileUriAndClear(context);
 
-            case REQUEST_CAPTURE:
-            case REQUEST_CROP:
+        if (uri != null) {
 
-                return getCaptureFileURI(context);
+            return uri;
         }
 
         if (data == null || data.getData() == null) {
@@ -389,35 +388,48 @@ public class MediaPicker {
 
         final Uri captureFileURI = Uri.fromFile(MediaPickerFile.createWithSuffix(".jpg"));
 
-        final SharedPreferences sharedPreferences = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        editor.putString(NAME, captureFileURI.toString());
-        editor.apply();
+        persistUri(context, captureFileURI.toString());
 
         return captureFileURI;
     }
 
     /**
-     * When taking a picture from a camera or cropping, we need to store the
-     * Uri to a temporary file to be filled.  Fetch it here.
+     * Persist a string Uri to shared preferences.  Can be null to remove
+     * any existing value.
      *
-     * @param context Application context.
-     *
-     * @return Associated file Uri.
-     *
-     * @throws IOException
+     * @param context Source {@link Context}.
+     * @param uri Target Uri string.
      */
-    private static Uri getCaptureFileURI(final Context context) throws IOException {
+    private static void persistUri(final Context context, final String uri) {
+
+        final SharedPreferences sharedPreferences = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString(NAME, uri);
+        editor.apply();
+    }
+
+    /**
+     * When taking a picture from a camera or cropping, we need to store the
+     * Uri to a temporary file to be filled.  Fetch it here and once
+     * recovered remove it from memory.
+     *
+     * @param context Source {@link Context}.
+     *
+     * @return Associated file Uri if found.
+     */
+    private static Uri getCaptureFileUriAndClear(final Context context) {
 
         final String uriString = context.getSharedPreferences(NAME, Context.MODE_PRIVATE).getString(NAME, null);
 
-        if (uriString == null) {
+        if (uriString != null) {
 
-            throw new IOException("Capture media result file data not found.");
+            persistUri(context, null);
+
+            return Uri.parse(uriString);
         }
 
-        return Uri.parse(uriString);
+        return null;
     }
 
     /**
