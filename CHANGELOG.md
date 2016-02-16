@@ -1,3 +1,7 @@
+## 1.2.2 - 2016-02-16
+
+- Bug fix for camera and crop results not being captured when called with chooser request type.
+
 ## 1.2.1 - 2016-02-12
 
 - Bug fix for encoding image file to data url.
