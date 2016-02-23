@@ -1,15 +1,16 @@
 package com.miguelgaeta.android_media_picker;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 
 import com.miguelgaeta.media_picker.MediaPicker;
 import com.miguelgaeta.media_picker.MediaPickerEncoder;
 import com.miguelgaeta.media_picker.MediaPickerRequest;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,69 +23,36 @@ public class AppActivity extends AppCompatActivity {
 
         setContentView(R.layout.app_activity);
 
-        findViewById(R.id.activity_open_camera).setOnClickListener(new View.OnClickListener() {
+        RxPermissions
+            .getInstance(this)
+            .requestEach(
+                Manifest.permission.CAMERA,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .subscribe(permission -> {
 
-            @Override
-            public void onClick(View v) {
+                Log.e("MediaPicker", "Permission result: " + permission);
+            });
 
-                MediaPicker.startForCamera(AppActivity.this, new MediaPicker.OnError() {
+        findViewById(R.id.activity_open_camera).setOnClickListener(v -> MediaPicker.startForCamera(AppActivity.this, e -> {
 
-                    @Override
-                    public void onError(IOException e) {
+            Log.e("MediaPicker", "Start for camera error.", e);
+        }));
 
-                        Log.e("MediaPicker", "Start for camera error.", e);
-                    }
-                });
-            }
-        });
+        findViewById(R.id.activity_open_gallery).setOnClickListener(v -> MediaPicker.startForGallery(AppActivity.this, e -> {
 
-        findViewById(R.id.activity_open_gallery).setOnClickListener(new View.OnClickListener() {
+            Log.e("MediaPicker", "Start for gallery error.", e);
+        }));
 
-            @Override
-            public void onClick(View v) {
+        findViewById(R.id.activity_open_documents).setOnClickListener(v -> MediaPicker.startForDocuments(AppActivity.this, e -> {
 
-                MediaPicker.startForGallery(AppActivity.this, new MediaPicker.OnError() {
+            Log.e("MediaPicker", "Start for documents error.", e);
+        }));
 
-                    @Override
-                    public void onError(IOException e) {
+        findViewById(R.id.activity_open_chooser).setOnClickListener(v -> MediaPicker.openMediaChooser(AppActivity.this, "Choose now", e -> {
 
-                        Log.e("MediaPicker", "Start for gallery error.", e);
-                    }
-                });
-            }
-        });
-
-        findViewById(R.id.activity_open_documents).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                MediaPicker.startForDocuments(AppActivity.this, new MediaPicker.OnError() {
-
-                    @Override
-                    public void onError(IOException e) {
-
-                        Log.e("MediaPicker", "Start for documents error.", e);
-                    }
-                });
-            }
-        });
-
-        findViewById(R.id.activity_open_chooser).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                MediaPicker.openMediaChooser(AppActivity.this, "Choose now", new MediaPicker.OnError() {
-
-                    @Override
-                    public void onError(IOException e) {
-
-                        Log.e("MediaPicker", "Open chooser error.", e);
-                    }
-                });
-            }
-        });
+            Log.e("MediaPicker", "Open chooser error.", e);
+        }));
     }
 
     @Override
@@ -110,13 +78,9 @@ public class AppActivity extends AppCompatActivity {
                     final int paramWidth = 128;
                     final int paramHeight = 128;
 
-                    MediaPicker.startForImageCrop(AppActivity.this, mediaFile, paramWidth, paramHeight, paramColor, new MediaPicker.OnError() {
+                    MediaPicker.startForImageCrop(AppActivity.this, mediaFile, paramWidth, paramHeight, paramColor, e -> {
 
-                        @Override
-                        public void onError(IOException e) {
-
-                            Log.e("MediaPicker", "Open cropper error.", e);
-                        }
+                        Log.e("MediaPicker", "Open cropper error.", e);
                     });
 
                 } else {

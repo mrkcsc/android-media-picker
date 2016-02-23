@@ -18,6 +18,13 @@ allprojects {
             url 'http://lorenzo.villani.me/android-cropimage/'
         }
     }
+
+    repositories {
+        maven {
+            url "http://dl.bintray.com/tbruyelle/tbruyelle"
+        }
+    }
+
 }
 
 task clean(type: Delete) {

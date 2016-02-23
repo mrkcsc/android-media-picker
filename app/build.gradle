@@ -1,3 +1,10 @@
+plugins {
+
+    // Java closures.
+    id 'me.tatarka.retrolambda' version '3.2.5'
+}
+
+// Application module.
 apply plugin: 'com.android.application'
 
 android {
@@ -6,11 +13,19 @@ android {
 
     defaultConfig {
         applicationId "com.miguelgaeta.android_media_picker"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
+
+    android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -21,7 +36,17 @@ android {
 
 dependencies {
 
+    // Support libraries.
     compile 'com.android.support:appcompat-v7:23.1.1'
+
+    // Rx Java permissions handler.
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
+
+    // Rx Java
+    compile 'io.reactivex:rxjava:1.1.0'
+
+    // Rx Java bindings.
+    compile 'com.jakewharton.rxbinding:rxbinding:0.2.0'
 
     compile project(':media-picker')
 }
