@@ -1,3 +1,4 @@
+## 1.2.5 - 2016-22-16
 ## 1.2.4 - 2016-22-16
 
 - Fixed a bug where camera permission was not granted on some Marshmallow devices (thanks Cole!).
