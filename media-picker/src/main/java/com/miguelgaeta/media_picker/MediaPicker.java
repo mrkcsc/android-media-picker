@@ -362,16 +362,19 @@ public class MediaPicker {
 
                 return getCaptureFileUriAndClear(context);
 
-            case REQUEST_DOCUMENTS:
-            case REQUEST_GALLERY:
             case REQUEST_CHOOSER:
 
-                if (data == null) {
+                if (data != null && data.getData() != null) {
 
-                    return getCaptureFileUriAndClear(context);
+                    return data.getData();
                 }
 
-                if (data.getData() == null) {
+                return getCaptureFileUriAndClear(context);
+
+            case REQUEST_DOCUMENTS:
+            case REQUEST_GALLERY:
+
+                if (data == null || data.getData() == null) {
 
                     throw new IOException("Picker returned no data result.");
                 }
