@@ -1,6 +1,10 @@
 package com.miguelgaeta.media_picker;
 
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +12,22 @@ import java.util.UUID;
 
 @SuppressWarnings("UnusedDeclaration")
 public class MediaPickerFile {
+
+    private Rect getImageDimensions(final @NonNull File file) {
+
+        return getImageDimensions(Uri.fromFile(file));
+    }
+
+    private Rect getImageDimensions(final @NonNull Uri uri) {
+
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+
+        options.inJustDecodeBounds = true;
+
+        BitmapFactory.decodeFile(uri.getPath(), options);
+
+        return new Rect(0, 0, options.outWidth, options.outHeight);
+    }
 
     /**
      * Create a file in the devices external storage.
