@@ -1,5 +1,6 @@
 package com.miguelgaeta.media_picker;
 
+import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,70 +102,14 @@ public class MediaPickerUri {
      */
     private static String getPath(final Context context, final Uri uri) throws IOException {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (isDocumentsProviderUri(context, uri)) {
 
-            // DocumentProvider
-            if (DocumentsContract.isDocumentUri(context, uri)) {
-
-                if (uri.getAuthority() == null) {
-
-                    throw new IOException("Uri authority cannot be null.");
-                }
-
-                final String documentId = DocumentsContract.getDocumentId(uri);
-
-                switch (uri.getAuthority()) {
-
-                    case AUTHORITY_EXTERNAL_STORAGE: {
-
-                        final String[] split = documentId.split(":");
-                        final String type = split[0];
-
-                        if ("primary".equalsIgnoreCase(type)) {
-
-                            return Environment.getExternalStorageDirectory() + "/" + split[1];
-                        }
-
-                        throw new IOException("Unable to handle non-primary external storage volumes.");
-                    }
-                    case AUTHORITY_DOWNLOADS_DOCUMENT: {
-
-                        final Uri contentUri = Uri.parse("content://downloads/public_downloads");
-                        final Uri contentUriAppended = ContentUris.withAppendedId(contentUri, Long.valueOf(documentId));
-
-                        return getDataColumn(context, contentUriAppended, null, null);
-                    }
-                    case AUTHORITY_MEDIA_DOCUMENT: {
-
-                        final String[] split = documentId.split(":");
-                        final String type = split[0];
-
-                        Uri contentUri = null;
-                        if ("image".equals(type)) {
-                            contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                        } else if ("video".equals(type)) {
-                            contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                        } else if ("audio".equals(type)) {
-                            contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                        }
-
-                        final String selection = "_id=?";
-                        final String[] selectionArgs = new String[] {
-                            split[1]
-                        };
-
-                        return getDataColumn(context, contentUri, selection, selectionArgs);
-                    }
-                    default:
-
-                        throw new IOException("Unknown URI document authority encountered: " + uri.getAuthority());
-                }
-            }
+            return getPathFromDocumentsProvider(context, uri);
         }
 
         if (uri.getScheme() == null) {
 
-            throw new IOException();
+            throw new IOException("Unknown URI scheme encountered.");
         }
 
         switch (uri.getScheme()) {
@@ -179,10 +125,111 @@ public class MediaPickerUri {
 
             case "file":
 
-                return uri.getPath();
+                final String path = uri.getPath();
+
+                if (path == null) {
+
+                    throw new IOException("URI file path cannot be null.");
+                }
+
+                return path;
 
             default:
                 throw new IOException("Unknown URI scheme encountered: " + uri.getScheme());
+        }
+    }
+
+    /**
+     * Identity if the provided {@link Uri} is from the document provider.
+     *
+     * @param context Android {@link Context} object.
+     * @param uri Android {@link Uri} object.
+     *
+     * @return True if the provided {@link Uri} belongs to the documents provided.
+     */
+    private static boolean isDocumentsProviderUri(final Context context, final Uri uri) {
+
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, uri);
+    }
+
+    /**
+     * Extract a file path from the documents provided.  If a path cannot be
+     * found throws an IOException.
+     *
+     * @param context Android {@link Context} object.
+     * @param uri Android {@link Uri} object.
+     *
+     * @return Discovered file path.
+     *
+     * @throws IOException Throw from any null file path or unexpected authority.
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT) @NonNull
+    private static String getPathFromDocumentsProvider(final Context context, final Uri uri) throws IOException {
+
+        if (uri.getAuthority() == null) {
+
+            throw new IOException("URI authority cannot be null.");
+        }
+
+        final String documentId = DocumentsContract.getDocumentId(uri);
+
+        switch (uri.getAuthority()) {
+
+            case AUTHORITY_EXTERNAL_STORAGE: {
+
+                final String[] split = documentId.split(":");
+                final String type = split[0];
+
+                if ("primary".equalsIgnoreCase(type)) {
+
+                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                }
+
+                throw new IOException("Unable to handle non-primary external storage volumes.");
+            }
+            case AUTHORITY_DOWNLOADS_DOCUMENT: {
+
+                final Uri contentUri = Uri.parse("content://downloads/public_downloads");
+                final Uri contentUriAppended = ContentUris.withAppendedId(contentUri, Long.valueOf(documentId));
+
+                final String path = getDataColumn(context, contentUriAppended, null, null);
+
+                if (path == null) {
+                    throw new IOException("Unable to find downloaded document path.");
+                }
+
+                return path;
+            }
+            case AUTHORITY_MEDIA_DOCUMENT: {
+
+                final String[] split = documentId.split(":");
+                final String type = split[0];
+
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+
+                final String selection = "_id=?";
+                final String[] selectionArgs = new String[] {
+                    split[1]
+                };
+
+                final String path = getDataColumn(context, contentUri, selection, selectionArgs);
+
+                if (path == null) {
+                    throw new IOException("Unable to find media document path.");
+                }
+
+                return path;
+            }
+            default:
+
+                throw new IOException("Unknown URI document authority encountered: " + uri.getAuthority());
         }
     }
 
