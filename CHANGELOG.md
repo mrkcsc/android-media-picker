@@ -1,5 +1,13 @@
-## 1.2.5 - 2016-22-16
-## 1.2.4 - 2016-22-16
+## 1.2.6 - 2016-03-19
+
+- Added #getImageDimensions utility method.
+- Added more robust error handling in MediaPickerUri #getPath
+- Added updated App Compat to `23.2.1`
+
+- Fixed Camera `uses-feature` tags are now explicitly marked as not required.
+
+## 1.2.5 - 2016-02-16
+## 1.2.4 - 2016-02-16
 
 - Fixed a bug where camera permission was not granted on some Marshmallow devices (thanks Cole!).
 
