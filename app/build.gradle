@@ -37,7 +37,7 @@ android {
 dependencies {
 
     // Support libraries.
-    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.2.1'
 
     // Rx Java permissions handler.
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
