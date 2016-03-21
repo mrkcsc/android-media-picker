@@ -13,12 +13,12 @@ import java.util.UUID;
 @SuppressWarnings("UnusedDeclaration")
 public class MediaPickerFile {
 
-    private Rect getImageDimensions(final @NonNull File file) {
+    public static Rect getImageDimensions(final @NonNull File file) {
 
         return getImageDimensions(Uri.fromFile(file));
     }
 
-    private Rect getImageDimensions(final @NonNull Uri uri) {
+    public static Rect getImageDimensions(final @NonNull Uri uri) {
 
         final BitmapFactory.Options options = new BitmapFactory.Options();
 
