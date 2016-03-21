@@ -1,3 +1,4 @@
+## 1.2.7 - 2016-03-21
 ## 1.2.6 - 2016-03-19
 
 - Added #getImageDimensions utility method.
