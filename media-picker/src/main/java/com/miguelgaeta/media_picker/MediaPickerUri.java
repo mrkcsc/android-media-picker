@@ -244,7 +244,7 @@ public class MediaPickerUri {
      *
      * @return The value of the _data column, which is typically a file path.
      */
-    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) throws IOException {
 
         Cursor cursor = null;
 
@@ -261,6 +261,10 @@ public class MediaPickerUri {
 
                 return cursor.getString(cursor.getColumnIndexOrThrow(column));
             }
+
+        } catch (IllegalArgumentException e) {
+
+            throw new IOException("Unable to read data column for intent.", e);
 
         } finally {
 
