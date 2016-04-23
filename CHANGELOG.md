@@ -1,3 +1,7 @@
+## 1.2.8 - 2016-04-22
+
+- Added additional guard when reading from cursor.
+
 ## 1.2.7 - 2016-03-21
 ## 1.2.6 - 2016-03-19
 
