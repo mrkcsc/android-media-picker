@@ -8,18 +8,17 @@ A utility library that allows a user to easily take a picture from the gallery, 
 
 ```groovy
 
-compile 'com.miguelgaeta.android-media-picker:media-picker:1.2.9'
+compile 'com.miguelgaeta.android-media-picker:media-picker:1.3.0'
 
 ```
 
 ### Usage
 
-Open media chooser - presents the user with a chooser showing all matching activities for picking media:
+First implement the MediaPicker.Provider interface in your Activities or Fragments.  Then open media chooser - presents the user with a chooser showing all matching activities for picking media:
 
 ```java
 
-    MediaPicker.openMediaChooser(Activity activity, MediaPicker.OnError result);
-    MediaPicker.openMediaChooser(Fragment fragment, MediaPicker.OnError result);
+    MediaPicker.openMediaChooser(Provider provider, MediaPicker.OnError result);
 
 ```
 
@@ -27,8 +26,7 @@ Choosing media from camera:
 
 ```java
 
-    MediaPicker.startForCamera(Activity activity, MediaPicker.OnError result);
-    MediaPicker.startForCamera(Fragment fragment, MediaPicker.OnError result);
+    MediaPicker.startForCamera(Provider provider, MediaPicker.OnError result);
 
 ```
 
@@ -36,8 +34,7 @@ Choosing media from gallery:
 
 ```java
 
-    MediaPicker.startForGallery(Activity activity, MediaPicker.OnError result);
-    MediaPicker.startForGallery(Fragment fragment, MediaPicker.OnError result);
+    MediaPicker.startForGallery(Provider provider, MediaPicker.OnError result);
 
 ```
 
@@ -45,8 +42,7 @@ Choosing media from documents:
 
 ```java
 
-    MediaPicker.startForDocuments(Activity activity, MediaPicker.OnError result);
-    MediaPicker.startForDocuments(Fragment fragment, MediaPicker.OnError result);
+    MediaPicker.startForDocuments(Provider provider, MediaPicker.OnError result);
 
 ```
 

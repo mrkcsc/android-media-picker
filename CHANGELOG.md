@@ -1,4 +1,4 @@
-## 1.2.9 - 2016-06-22
+## 1.3.0 - 2016-06-22
 
 - Cancelled or unused temporary files are now removed.  Saved images should show immediately.
 
