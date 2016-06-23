@@ -1,3 +1,7 @@
+## 1.2.9 - 2016-06-22
+
+- Cancelled or unused temporary files are now removed.  Saved images should show immediately.
+
 ## 1.2.8 - 2016-04-22
 
 - Added additional guard when reading from cursor.
