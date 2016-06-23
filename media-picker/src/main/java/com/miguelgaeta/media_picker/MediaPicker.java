@@ -18,7 +18,7 @@ import java.io.IOException;
 /**
  * Created by Miguel Gaeta on 2/10/16.
  */
-@SuppressWarnings("UnusedDeclaration")
+@SuppressWarnings({"UnusedDeclaration", "DefaultFileTemplate"})
 public class MediaPicker {
 
     static final String NAME = "media_picker";
@@ -320,11 +320,17 @@ public class MediaPicker {
 
                 case Activity.RESULT_OK:
 
-                    result.onSuccess(MediaPickerUri.resolveToFile(context, handleActivityUriResult(context, request, data)), request);
+                    final File file = MediaPickerUri.resolveToFile(context, handleActivityUriResult(context, request, data));
+
+                    refreshSystemMediaScanDataBase(context, file);
+
+                    result.onSuccess(file, request);
 
                     break;
 
                 case Activity.RESULT_CANCELED:
+
+                    deleteCaptureFileUri(context);
 
                     result.onCancelled();
 
@@ -366,6 +372,8 @@ public class MediaPicker {
 
                 if (data != null && data.getData() != null) {
 
+                    deleteCaptureFileUri(context);
+
                     return data.getData();
                 }
 
@@ -373,6 +381,8 @@ public class MediaPicker {
 
             case REQUEST_DOCUMENTS:
             case REQUEST_GALLERY:
+
+                deleteCaptureFileUri(context);
 
                 if (data == null || data.getData() == null) {
 
@@ -445,6 +455,40 @@ public class MediaPicker {
         }
 
         return null;
+    }
+
+    /**
+     * If present, delete capture file URI from disk.
+     *
+     * @return Returns true if cleaned successfully.
+     */
+    private static boolean deleteCaptureFileUri(final Context context) throws IOException {
+
+        final Uri uri = getCaptureFileUriAndClear(context);
+
+        if (uri != null) {
+
+            final File file = MediaPickerUri.resolveToFile(context, uri);
+            final boolean result = file.delete();
+
+            refreshSystemMediaScanDataBase(context, file);
+
+            return result;
+        }
+
+        return true;
+    }
+
+    /**
+     * Refresh so file appears in associated
+     * gallery and media explorer applications.
+     */
+    public static void refreshSystemMediaScanDataBase(final Context context, final File file) {
+        final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+
+        mediaScanIntent.setData(Uri.fromFile(file));
+
+        context.sendBroadcast(mediaScanIntent);
     }
 
     /**

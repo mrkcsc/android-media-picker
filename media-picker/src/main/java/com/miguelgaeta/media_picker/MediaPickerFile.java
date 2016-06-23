@@ -61,7 +61,7 @@ public class MediaPickerFile {
             throw new IOException("Unable to create temporary file, does not exist.");
         }
 
-        return File.createTempFile(name, suffix, dir);
+        return file;
     }
 
     /**
