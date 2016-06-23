@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
 
 import com.android.camera.CropImageIntentBuilder;
 
@@ -24,137 +22,78 @@ public class MediaPicker {
     static final String NAME = "media_picker";
 
     /**
-     * @see #openMediaChooser(Activity, Fragment, String, OnError)
+     * @see #openMediaChooser(Provider, String, OnError)
      */
-    public static void openMediaChooser(final Activity activity, final String title, final OnError result) {
+    public static void openMediaChooser(final Provider provider, final int title, final OnError result) {
 
-        openMediaChooser(activity, null, title, result);
-    }
-
-    /**
-     * @see #openMediaChooser(Activity, String, OnError)
-     */
-    public static void openMediaChooser(final Activity activity, @StringRes final int title, final OnError result) {
-
-        openMediaChooser(activity, activity.getString(title), result);
-    }
-
-    /**
-     * @see #openMediaChooser(Activity, Fragment, String, OnError)
-     */
-    public static void openMediaChooser(final Fragment fragment, final String title, final OnError result) {
-
-        openMediaChooser(null, fragment, title, result);
-    }
-
-    /**
-     * @see #openMediaChooser(Fragment, String, OnError)
-     */
-    public static void openMediaChooser(final Fragment fragment, @StringRes final int title, final OnError result) {
-
-        openMediaChooser(fragment, fragment.getString(title), result);
+        openMediaChooser(provider, provider.getContext().getString(title), result);
     }
 
     /**
      * Create a chooser intent that matches all types of activities
      * for taking photos or selecting media.
      *
-     * @param activity Source {@link Activity}.
-     * @param fragment Source {@link Fragment}.
+     * @param provider Source {@link Provider}.
      *
-     * @param title Chooser title.
+     * @param title Chooser title string resource.
      *
      * @param result Can fail to create the file needed for the camera intents.
      */
-    private static void openMediaChooser(final Activity activity, final Fragment fragment, final String title, final OnError result) {
+    public static void openMediaChooser(final Provider provider, final String title, final OnError result) {
 
         try {
 
-            final Context context = activity != null ? activity : fragment.getContext();
+            final Context context = provider.getContext();
 
-            final Uri captureFileURI = createTempImageFileAndPersistUri(activity, fragment);
+            final Uri captureFileURI = createTempImageFileAndPersistUri(context);
 
             final Intent intent = MediaPickerChooser.getMediaChooserIntent(context.getPackageManager(), title, captureFileURI);
 
-            startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_CHOOSER.getCode());
+            startFor(provider, intent, MediaPickerRequest.REQUEST_CHOOSER.getCode());
 
         } catch (IOException e) {
 
             result.onError(e);
         }
-    }
-
-    /**
-     * @see #startForCamera(Activity, Fragment, OnError)
-     */
-    public static void startForCamera(final Activity activity, final OnError result) {
-
-        startForCamera(activity, null, result);
-    }
-
-    /**
-     * @see #startForCamera(Activity, Fragment, OnError)
-     */
-    public static void startForCamera(final Fragment fragment, final OnError result) {
-
-        startForCamera(null, fragment, result);
     }
 
     /**
      * Start the camera application correctly.
      *
-     * @param activity Source {@link Activity}.
-     * @param fragment Source {@link Fragment}.
+     * @param provider Source {@link Provider}.
      *
      * @param result The camera open action can fail so capture the result.
      */
-    private static void startForCamera(final Activity activity, final Fragment fragment, final OnError result) {
+    public static void startForCamera(final Provider provider, final OnError result) {
 
         try {
 
-            final Uri captureFileURI = createTempImageFileAndPersistUri(activity, fragment);
+            final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
 
             final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI);
 
-            startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_CAPTURE.getCode());
+            startFor(provider, intent, MediaPickerRequest.REQUEST_CAPTURE.getCode());
 
         } catch (IOException e) {
 
             result.onError(e);
         }
-    }
-
-    /**
-     * @see #startForGallery(Activity, Fragment, OnError)
-     */
-    public static void startForGallery(final Activity activity, final OnError result) {
-
-        startForGallery(activity, null, result);
-    }
-
-    /**
-     * @see #startForGallery(Activity, Fragment, OnError)
-     */
-    public static void startForGallery(final Fragment fragment, final OnError result) {
-
-        startForGallery(null, fragment, result);
     }
 
     /**
      * Start the gallery application directly.
      *
-     * @param activity Source {@link Activity}.
-     * @param fragment Source {@link Fragment}.
+     * @param provider Source {@link Provider}.
      *
      * @param result Failure to open gallery captured in result callback..
      */
-    private static void startForGallery(final Activity activity, final Fragment fragment, final OnError result) {
+    public static void startForGallery(final Provider provider, final OnError result) {
 
         try {
 
             final Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-            startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_GALLERY.getCode());
+            startFor(provider, intent, MediaPickerRequest.REQUEST_GALLERY.getCode());
 
         } catch (IOException e) {
 
@@ -163,30 +102,13 @@ public class MediaPicker {
     }
 
     /**
-     * @see #startForDocuments(Activity, Fragment, OnError)
-     */
-    public static void startForDocuments(final Fragment fragment, final OnError result) {
-
-        startForDocuments(null, fragment, result);
-    }
-
-    /**
-     * @see #startForDocuments(Activity, Fragment, OnError)
-     */
-    public static void startForDocuments(final Activity activity, final OnError result) {
-
-        startForDocuments(activity, null, result);
-    }
-
-    /**
      * Start the documents chooser directly.
      *
-     * @param activity Source {@link Activity}.
-     * @param fragment Source {@link Fragment}.
+     * @param provider Source {@link Provider}.
      *
      * @param result The document open action can fail so capture the result.
      */
-    private static void startForDocuments(final Activity activity, final Fragment fragment, final OnError result) {
+    public static void startForDocuments(final Provider provider, final OnError result) {
 
         try {
 
@@ -194,7 +116,7 @@ public class MediaPicker {
 
             intent.setType("image/*");
 
-            startFor(activity, fragment, intent, MediaPickerRequest.REQUEST_DOCUMENTS.getCode());
+            startFor(provider, intent, MediaPickerRequest.REQUEST_DOCUMENTS.getCode());
 
         } catch (IOException e) {
 
@@ -203,53 +125,28 @@ public class MediaPicker {
     }
 
     /**
-     * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, OnError)
+     * @see #startForImageCrop(Provider, File, int, int, int, OnError)
      */
-    public static void startForImageCrop(final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
+    public static void startForImageCrop(final Provider provider, final File file, int outputWidth, int outputHeight, int colorInt, final OnError result) {
 
-        startForImageCrop(null, fragment, uri, outputWidth, outputHeight, colorInt, result);
-    }
-
-    /**
-     * @see #startForImageCrop(Fragment, File, int, int, int, OnError)
-     */
-    public static void startForImageCrop(final Fragment fragment, final File file, int outputWidth, int outputHeight, int colorInt, final OnError result) {
-
-        startForImageCrop(fragment, Uri.fromFile(file), outputWidth, outputHeight, colorInt, result);
-    }
-
-    /**
-     * @see #startForImageCrop(Activity, Fragment, Uri, int, int, int, OnError)
-     */
-    public static void startForImageCrop(final Activity activity, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
-
-        startForImageCrop(activity, null, uri, outputWidth, outputHeight, colorInt, result);
-    }
-
-    /**
-     * @see #startForImageCrop(Activity, File, int, int, int, OnError)
-     */
-    public static void startForImageCrop(final Activity activity, final File file, int outputWidth, int outputHeight, int colorInt, final OnError result) {
-
-        startForImageCrop(activity, null, Uri.fromFile(file), outputWidth, outputHeight, colorInt, result);
+        startForImageCrop(provider, Uri.fromFile(file), outputWidth, outputHeight, colorInt, result);
     }
 
     /**
      * Start activity for cropping.
      *
-     * @param activity Source {@link Activity}.
-     * @param fragment Source {@link Fragment}.
+     * @param provider Source {@link Provider}.
      * @param uri Source file URI.
      * @param outputWidth Cropped file output width.
      * @param outputHeight Cropped file output height.
      * @param colorInt Cropping UI circle color.
      * @param result Result callbacks.
      */
-    private static void startForImageCrop(final Activity activity, final Fragment fragment, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
+    private static void startForImageCrop(final Provider provider, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
 
         try {
 
-            final Uri captureFileURI = createTempImageFileAndPersistUri(activity, fragment);
+            final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
 
             final CropImageIntentBuilder intentBuilder = new CropImageIntentBuilder(outputWidth, outputHeight, captureFileURI);
 
@@ -259,9 +156,7 @@ public class MediaPicker {
             intentBuilder.setOutlineColor(colorInt);
             intentBuilder.setScaleUpIfNeeded(true);
 
-            final Context context = activity != null ? activity : fragment.getContext();
-
-            startFor(activity, fragment, intentBuilder.getIntent(context), MediaPickerRequest.REQUEST_CROP.getCode());
+            startFor(provider, intentBuilder.getIntent(provider.getContext()), MediaPickerRequest.REQUEST_CROP.getCode());
 
         } catch (IOException e) {
 
@@ -273,21 +168,16 @@ public class MediaPicker {
      * Start activity for result helper that accepts both activities
      * and or fragments.
      *
-     * @param activity Source {@link Activity}.
-     * @param fragment Source {@link Fragment}.
+     * @param provider Source {@link Provider}.
      * @param intent Source {@link Intent}
      * @param requestCode Request code for capturing result.
      */
-    private static void startFor(final Activity activity, final Fragment fragment, final Intent intent, final int requestCode) throws IOException {
+    private static void startFor(final Provider provider, final Intent intent, final int requestCode) throws IOException {
 
         try {
 
-            if (activity != null) {
-                activity.startActivityForResult(intent, requestCode);
-            }
-
-            if (fragment != null) {
-                fragment.startActivityForResult(intent, requestCode);
+            if (provider != null) {
+                provider.startActivityForResult(intent, requestCode);
             }
 
         } catch (ActivityNotFoundException e) {
@@ -400,16 +290,13 @@ public class MediaPicker {
      * preferences here in the case that we lose our current
      * instance by the time the activity returns a result.
      *
-     * @param activity Source {@link Activity}.
-     * @param fragment Source {@link Fragment}.
+     * @param context Source {@link Context}.
      *
      * @return Uri of the created file.
      *
      * @throws IOException
      */
-    private static Uri createTempImageFileAndPersistUri(final Activity activity, final Fragment fragment) throws IOException {
-
-        final Context context = activity != null ? activity : fragment.getContext();
+    private static Uri createTempImageFileAndPersistUri(final Context context) throws IOException {
 
         final Uri captureFileURI = Uri.fromFile(MediaPickerFile.createWithSuffix(".jpg"));
 
@@ -526,5 +413,17 @@ public class MediaPicker {
 
             }
         }
+    }
+
+    /**
+     * Provider for context and start activity for
+     * result.  Typically should be a target
+     * activity fragment, or app compat fragment instance.
+     */
+    public interface Provider {
+
+        Context getContext();
+
+        void startActivityForResult(final Intent intent, final int requestCode);
     }
 }

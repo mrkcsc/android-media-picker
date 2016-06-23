@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -163,7 +162,7 @@ public class MediaPickerUri {
      *
      * @throws IOException Throw from any null file path or unexpected authority.
      */
-    @TargetApi(Build.VERSION_CODES.KITKAT) @NonNull
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private static String getPathFromDocumentsProvider(final Context context, final Uri uri) throws IOException {
 
         if (uri.getAuthority() == null) {

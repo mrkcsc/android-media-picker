@@ -21,9 +21,6 @@ android {
 
 dependencies {
 
-    // Support library for compatibility.
-    compile 'com.android.support:appcompat-v7:24.0.0'
-
     // Crop images android library.
     compile 'me.villani.lorenzo.android:android-cropimage:1.1.2'
 }

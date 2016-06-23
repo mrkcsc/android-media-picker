@@ -1,6 +1,7 @@
 package com.miguelgaeta.android_media_picker;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -15,7 +16,8 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import java.io.File;
 import java.io.IOException;
 
-public class AppActivity extends AppCompatActivity {
+@SuppressWarnings({"ConstantConditions", "CodeBlock2Expr"})
+public class AppActivity extends AppCompatActivity implements MediaPicker.Provider {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,5 +105,10 @@ public class AppActivity extends AppCompatActivity {
                 Log.e("MediaPicker", "Got cancelled event.");
             }
         });
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 }

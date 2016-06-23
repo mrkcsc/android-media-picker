@@ -4,7 +4,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,12 +12,12 @@ import java.util.UUID;
 @SuppressWarnings("UnusedDeclaration")
 public class MediaPickerFile {
 
-    public static Rect getImageDimensions(final @NonNull File file) {
+    public static Rect getImageDimensions(final File file) {
 
         return getImageDimensions(Uri.fromFile(file));
     }
 
-    public static Rect getImageDimensions(final @NonNull Uri uri) {
+    public static Rect getImageDimensions(final Uri uri) {
 
         final BitmapFactory.Options options = new BitmapFactory.Options();
 
