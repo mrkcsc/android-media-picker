@@ -1,3 +1,7 @@
+## 1.3.1 - 2016-06-22
+
+- Add support for using FileProvider URIs.
+
 ## 1.3.0 - 2016-06-22
 
 - Cancelled or unused temporary files are now removed.  Saved images should show immediately.
