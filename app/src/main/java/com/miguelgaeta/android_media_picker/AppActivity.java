@@ -3,8 +3,10 @@ package com.miguelgaeta.android_media_picker;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -15,6 +17,8 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @SuppressWarnings({"ConstantConditions", "CodeBlock2Expr"})
 public class AppActivity extends AppCompatActivity implements MediaPicker.Provider {
@@ -40,6 +44,21 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
 
             Log.e("MediaPicker", "Start for camera error.", e);
         }));
+
+        findViewById(R.id.activity_open_camera_provider).setOnClickListener(v -> MediaPicker.startForCamera(
+                AppActivity.this,
+                new MyContentFileProvider(),
+                new MediaPicker.BaseOnError() {
+                    @Override
+                    public void onError(final IOException e) {
+                        Log.e("MediaPicker", "Start for camera error.", e);
+                    }
+
+                    @Override
+                    public void onFileCreationError(final Exception e) {
+                        Log.e("MediaPicker", "Creating output file error.", e);
+                    }
+                }));
 
         findViewById(R.id.activity_open_gallery).setOnClickListener(v -> MediaPicker.startForGallery(AppActivity.this, e -> {
 
@@ -110,5 +129,24 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
     @Override
     public Context getContext() {
         return this;
+    }
+
+    private class MyContentFileProvider implements MediaPicker.ContentFileProvider {
+        @Override
+        public File createFile() throws IOException {
+            File imagePath = getExternalFilesDir("images");
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = "img_" + timeStamp;
+            return File.createTempFile(imageFileName, ".jpg", imagePath);
+
+        }
+
+        @Override
+        public Uri toUri(final File file) {
+            return FileProvider.getUriForFile(AppActivity.this,
+                    BuildConfig.APPLICATION_ID + ".fileprovider",
+                    file);
+        }
     }
 }

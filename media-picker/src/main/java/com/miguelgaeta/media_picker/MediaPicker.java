@@ -67,15 +67,42 @@ public class MediaPicker {
     public static void startForCamera(final Provider provider, final OnError result) {
 
         try {
-
             final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
+            startForCamera(provider, captureFileURI, result);
+        } catch (IOException e) {
+            result.onError(e);
+        }
+    }
 
-            final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI);
+    public static void startForCamera(final Provider provider, final ContentFileProvider fileProvider, final BaseOnError result) {
+        Uri captureFileURI = null;
+        try{
+            File photoFile =  fileProvider.createFile();
+            captureFileURI = fileProvider.toUri(photoFile);
+            persistUri(provider.getContext(), photoFile.toURI().toString());
+        } catch (Exception e) {
+            result.onFileCreationError(e);
+            return;
+        }
 
+        startForCamera(provider, captureFileURI, result);
+    }
+
+    public interface ContentFileProvider {
+        File createFile() throws IOException;
+        Uri toUri(File file);
+    }
+
+    public static void startForCamera(final Provider provider, final Uri captureFileURI, final OnError result) {
+
+        try {
+            final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    .putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI)
+                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startFor(provider, intent, MediaPickerRequest.REQUEST_CAPTURE.getCode());
 
         } catch (IOException e) {
-
             result.onError(e);
         }
     }
@@ -386,6 +413,13 @@ public class MediaPicker {
     public interface OnError {
 
         void onError(final IOException e);
+    }
+
+    public static abstract class BaseOnError implements OnError {
+
+        public void onFileCreationError(final Exception e) {
+            return;
+        }
     }
 
     /**
