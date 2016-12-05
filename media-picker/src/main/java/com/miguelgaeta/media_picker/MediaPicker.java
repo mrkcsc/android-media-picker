@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 
 import com.android.camera.CropImageIntentBuilder;
 
@@ -18,8 +19,6 @@ import java.io.IOException;
  */
 @SuppressWarnings({"UnusedDeclaration", "DefaultFileTemplate", "JavadocReference"})
 public class MediaPicker {
-
-    private static final String NAME = "media_picker";
 
     /**
      * @see #openMediaChooser(Provider, String, OnError)
@@ -41,7 +40,7 @@ public class MediaPicker {
      */
     public static void openMediaChooser(final Provider provider, final String title, final OnError result) {
         try {
-            final Uri captureFileURI = createTempImageFileAndPersistUri(provider);
+            final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
 
             final Intent intent = MediaPickerChooser.getMediaChooserIntent(provider.getContext().getPackageManager(), title, captureFileURI);
 
@@ -61,7 +60,7 @@ public class MediaPicker {
      */
     public static void startForCamera(final Provider provider, final OnError result) {
         try {
-            final Uri captureFileURI = createTempImageFileAndPersistUri(provider);
+            final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
 
             final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 .putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI)
@@ -139,7 +138,7 @@ public class MediaPicker {
      */
     private static void startForImageCrop(final Provider provider, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
         try {
-            final Uri captureFileURI = createTempImageFileAndPersistUri(provider);
+            final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
 
             final CropImageIntentBuilder intentBuilder = new CropImageIntentBuilder(outputWidth, outputHeight, captureFileURI);
 
@@ -285,17 +284,19 @@ public class MediaPicker {
      * instance by the time the activity returns a result.
      *
      * @param context Source {@link Context}.
-     * @param fileProvider provides the necessary file for the camera to save into
      *
      * @return Uri of the created file.
      *
      * @throws IOException Throws if cannot be created or persisted.
      */
-    private static Uri createTempImageFileAndPersistUri(final Provider provider) throws IOException {
-        final File photoFile = provider.createFile();
-        final Uri captureFileURI = provider.toUri(photoFile);
+    private static Uri createTempImageFileAndPersistUri(final Context context) throws IOException {
+        final File file = MediaPickerFile.create(context.getFilesDir(), "files", ".jpg");
 
-        persistUri(provider.getContext(), photoFile.toURI().toString());
+        final String authority = context.getPackageName() + ".file-provider";
+
+        final Uri captureFileURI = FileProvider.getUriForFile(context, authority, file);
+
+        persistUri(context, file.toURI().toString());
 
         return captureFileURI;
     }
@@ -309,10 +310,9 @@ public class MediaPicker {
      */
     private static void persistUri(final Context context, final String uri) {
 
-        final SharedPreferences sharedPreferences = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = sharedPreferences.edit();
+        final SharedPreferences.Editor editor = getSharedPreferences(context).edit();
 
-        editor.putString(NAME, uri);
+        editor.putString("picker_uri", uri);
         editor.apply();
     }
 
@@ -327,7 +327,7 @@ public class MediaPicker {
      */
     private static Uri getCaptureFileUriAndClear(final Context context) {
 
-        final String uriString = context.getSharedPreferences(NAME, Context.MODE_PRIVATE).getString(NAME, null);
+        final String uriString = getSharedPreferences(context).getString("picker_uri", null);
 
         if (uriString != null) {
 
@@ -337,6 +337,17 @@ public class MediaPicker {
         }
 
         return null;
+    }
+
+    /***
+     * Fetch private instance of shared preferences used for catching.
+     *
+     * @param context {@link Context}.
+     *
+     * @return Instance of {@link SharedPreferences}.
+     */
+    private static SharedPreferences getSharedPreferences(final Context context) {
+        return context.getSharedPreferences("picker", Context.MODE_PRIVATE);
     }
 
     /**
@@ -408,17 +419,5 @@ public class MediaPicker {
         Context getContext();
 
         void startActivityForResult(final Intent intent, final int requestCode);
-
-        File createFile() throws IOException;
-
-        /**
-         * Converts the File to a Uri.
-         *
-         * @param file {@link File} to be sent to the media source to write data.
-         * @return {@link Uri} representation of the <code>file</code>. For API 24+ this must be a {@link Uri}
-         *      provided by the {@link android.support.v4.content.FileProvider}
-         *
-         */
-        Uri toUri(File file);
     }
 }

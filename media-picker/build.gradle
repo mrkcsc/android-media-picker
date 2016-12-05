@@ -21,6 +21,9 @@ android {
 
 dependencies {
 
+    //noinspection GradleDynamicVersion
+    compile 'com.android.support:support-core-utils:25.+'
+
     // Crop images android library.
     compile 'me.villani.lorenzo.android:android-cropimage:1.1.2'
 }

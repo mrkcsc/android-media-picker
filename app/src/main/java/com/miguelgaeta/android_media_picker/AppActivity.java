@@ -3,16 +3,13 @@ package com.miguelgaeta.android_media_picker;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.miguelgaeta.media_picker.MediaPicker;
 import com.miguelgaeta.media_picker.MediaPickerEncoder;
-import com.miguelgaeta.media_picker.MediaPickerFile;
 import com.miguelgaeta.media_picker.MediaPickerRequest;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -113,17 +110,5 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
     @Override
     public Context getContext() {
         return this;
-    }
-
-    @Override
-    public File createFile() throws IOException {
-        return MediaPickerFile.create(getFilesDir(), "images", ".jpg");
-    }
-
-    @Override
-    public Uri toUri(final File file) {
-        final String authority = BuildConfig.APPLICATION_ID + ".file-provider";
-
-        return FileProvider.getUriForFile(this, authority, file);
     }
 }
