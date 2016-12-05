@@ -33,9 +33,12 @@ class MediaPickerChooser {
      *
      * @throws IOException
      */
-    static Intent getMediaChooserIntent(PackageManager packageManager, String chooserTitle, final Uri captureFileURI) throws IOException {
+    static Intent getMediaChooserIntent(final PackageManager packageManager,
+                                        final String chooserTitle,
+                                        final Uri captureFileURI,
+                                        final Filter filter) throws IOException {
 
-        final Collection<Intent> intents = getMediaActivityIntents(packageManager, captureFileURI);
+        final Collection<Intent> intents = getMediaActivityIntents(packageManager, captureFileURI, filter);
 
         if (intents.isEmpty()) {
 
@@ -71,11 +74,13 @@ class MediaPickerChooser {
      *
      * @return Collection of media activity intents.
      */
-    private static Collection<Intent> getMediaActivityIntents(final PackageManager packageManager, final Uri captureFileURI) {
+    private static Collection<Intent> getMediaActivityIntents(final PackageManager packageManager,
+                                                              final Uri captureFileURI,
+                                                              final Filter filter) {
 
         final Intent typeCamera = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        final Intent typeGallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        final Intent typeDocuments = new Intent(Intent.ACTION_GET_CONTENT).setType("image/*");
+        final Intent typeGallery = filter.getIntent(Intent.ACTION_PICK);
+        final Intent typeDocuments = filter.getIntent(Intent.ACTION_GET_CONTENT);
 
         final Map<String, Intent> intents = new LinkedHashMap<>();
 

@@ -11,6 +11,7 @@ import android.util.Log;
 import com.miguelgaeta.media_picker.MediaPicker;
 import com.miguelgaeta.media_picker.Encoder;
 import com.miguelgaeta.media_picker.MediaPickerRequest;
+import com.miguelgaeta.media_picker.MimeType;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
@@ -84,7 +85,7 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                     }
                 }
 
-                if (request != MediaPickerRequest.REQUEST_CROP) {
+                if (request != MediaPickerRequest.REQUEST_CROP && MimeType.isImage(mimeType)) {
 
                     final int paramColor = ContextCompat.getColor(AppActivity.this, android.R.color.black);
                     final int paramWidth = 128;
