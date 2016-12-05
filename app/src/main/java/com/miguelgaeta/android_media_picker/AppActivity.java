@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 @SuppressWarnings({"ConstantConditions", "CodeBlock2Expr"})
 public class AppActivity extends AppCompatActivity implements MediaPicker.Provider {
@@ -40,11 +41,6 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                 Log.e("MediaPicker", "Permission result: " + permission);
             });
 
-        findViewById(R.id.activity_open_camera).setOnClickListener(v -> MediaPicker.startForCamera(AppActivity.this, e -> {
-
-            Log.e("MediaPicker", "Start for camera error.", e);
-        }));
-
         findViewById(R.id.activity_open_camera_provider).setOnClickListener(v -> MediaPicker.startForCamera(
                 AppActivity.this,
                 new MyContentFileProvider(),
@@ -60,17 +56,17 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                     }
                 }));
 
-        findViewById(R.id.activity_open_gallery).setOnClickListener(v -> MediaPicker.startForGallery(AppActivity.this, e -> {
+        findViewById(R.id.activity_open_gallery).setOnClickListener(v -> MediaPicker.startForGallery(this, e -> {
 
             Log.e("MediaPicker", "Start for gallery error.", e);
         }));
 
-        findViewById(R.id.activity_open_documents).setOnClickListener(v -> MediaPicker.startForDocuments(AppActivity.this, e -> {
+        findViewById(R.id.activity_open_documents).setOnClickListener(v -> MediaPicker.startForDocuments(this, e -> {
 
             Log.e("MediaPicker", "Start for documents error.", e);
         }));
 
-        findViewById(R.id.activity_open_chooser).setOnClickListener(v -> MediaPicker.openMediaChooser(AppActivity.this, "Choose now", e -> {
+        findViewById(R.id.activity_open_chooser).setOnClickListener(v -> MediaPicker.openMediaChooser(this, "Choose now", e -> {
 
             Log.e("MediaPicker", "Open chooser error.", e);
         }));
@@ -136,7 +132,7 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
         public File createFile() throws IOException {
             File imagePath = getExternalFilesDir("images");
 
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
             String imageFileName = "img_" + timeStamp;
             return File.createTempFile(imageFileName, ".jpg", imagePath);
 
