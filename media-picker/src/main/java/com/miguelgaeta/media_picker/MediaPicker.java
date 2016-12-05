@@ -90,7 +90,7 @@ public class MediaPicker {
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_GALLERY.getCode());
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
 
             result.onError(e);
         }
@@ -113,7 +113,7 @@ public class MediaPicker {
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_DOCUMENTS.getCode());
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
 
             result.onError(e);
         }
@@ -151,7 +151,7 @@ public class MediaPicker {
 
             startFor(provider, intentBuilder.getIntent(provider.getContext()), MediaPickerRequest.REQUEST_CROP.getCode());
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
 
             result.onError(e);
         }
@@ -173,7 +173,7 @@ public class MediaPicker {
                 provider.startActivityForResult(intent, requestCode);
             }
 
-        } catch (ActivityNotFoundException e) {
+        } catch (final ActivityNotFoundException e) {
 
             throw new IOException("No application available for media picker.");
         }
@@ -225,7 +225,7 @@ public class MediaPicker {
                     throw new IOException("Bad activity result code: " + resultCode + ", for request code: " + requestCode);
             }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
 
             result.onError(e);
         }
