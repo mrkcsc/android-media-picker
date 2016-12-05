@@ -46,7 +46,7 @@ public class MediaPicker {
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_CHOOSER.getCode());
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
 
             result.onError(e);
         }
@@ -69,8 +69,9 @@ public class MediaPicker {
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_CAPTURE.getCode());
 
-        } catch (final Exception e) {
-            result.onError(new IOException("Unable to create temporary file.", e));
+        } catch (final IOException e) {
+
+            result.onError(e);
         }
     }
 
