@@ -11,7 +11,7 @@ import android.webkit.MimeTypeMap;
  * extraction methods to heuristically determine a
  * best guess for the associated type.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class MimeType {
 
     private static final MimeTypeMap MIME_TYPE_MAP = MimeTypeMap.getSingleton();
@@ -24,7 +24,6 @@ public class MimeType {
      *
      * @return Discovered mime type or null.
      */
-    @SuppressWarnings("WeakerAccess")
     public static String getMimeType(final Context context, final Uri uri) {
         if (uri == null) {
             return null;
