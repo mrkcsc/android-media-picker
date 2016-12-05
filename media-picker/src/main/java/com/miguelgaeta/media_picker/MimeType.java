@@ -17,6 +17,18 @@ public class MimeType {
     private static final MimeTypeMap MIME_TYPE_MAP = MimeTypeMap.getSingleton();
 
     /**
+     * Convenience method to determine if a given
+     * mime type is an image.
+     *
+     * @param mimeType Mime type string.
+     *
+     * @return True if image, false otherwise.
+     */
+    public boolean isImage(final String mimeType) {
+        return mimeType != null && mimeType.startsWith("image/");
+    }
+
+    /**
      * Get a best guess of the mime type associated with the target {@link Uri}.
      *
      * @param context Optional {@link Context} that checks for mime type from {@link ContentResolver}.
