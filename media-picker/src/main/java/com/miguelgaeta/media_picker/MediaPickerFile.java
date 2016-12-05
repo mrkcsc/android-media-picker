@@ -94,4 +94,20 @@ public class MediaPickerFile {
 
         return create("media_picker", UUID.randomUUID().toString(), suffix);
     }
+
+    /**
+     * Provides a simple default implementation to create a file for the {@link  MediaPicker}.
+     */
+    public static class DefaultContentFileProvider implements MediaPicker.ContentFileProvider {
+        @Override
+        public File createFile() throws IOException {
+            return MediaPickerFile.createWithSuffix(".jpg");
+        }
+
+        @Override
+        public Uri toUri(final File file) {
+            return Uri.fromFile(file);
+        }
+    }
+
 }
