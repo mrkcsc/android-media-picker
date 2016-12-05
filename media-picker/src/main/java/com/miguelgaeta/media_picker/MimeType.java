@@ -24,7 +24,7 @@ public class MimeType {
      *
      * @return True if image, false otherwise.
      */
-    public boolean isImage(final String mimeType) {
+    public static boolean isImage(final String mimeType) {
         return mimeType != null && mimeType.startsWith("image/");
     }
 
