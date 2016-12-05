@@ -40,14 +40,10 @@ public class MediaPicker {
      * @param result Can fail to create the file needed for the camera intents.
      */
     public static void openMediaChooser(final Provider provider, final String title, final OnError result) {
-
         try {
+            final Uri captureFileURI = createTempImageFileAndPersistUri(provider);
 
-            final Context context = provider.getContext();
-
-            final Uri captureFileURI = createTempImageFileAndPersistUri(context);
-
-            final Intent intent = MediaPickerChooser.getMediaChooserIntent(context.getPackageManager(), title, captureFileURI);
+            final Intent intent = MediaPickerChooser.getMediaChooserIntent(provider.getContext().getPackageManager(), title, captureFileURI);
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_CHOOSER.getCode());
 
@@ -58,60 +54,24 @@ public class MediaPicker {
     }
 
     /**
-     * Start the camera application correctly.
-     *
-     * @param provider Source {@link Provider}.
-     * @param result The camera open action can fail so capture the result.
-     *
-     * @deprecated Implement your own {@link ContentFileProvider} and use
-     *      {@link #startForCamera(Provider, ContentFileProvider, BaseOnError)}.
-     *      For devices 24+ you must use a {@link android.support.v4.content.FileProvider} content URI.
-     *
-     * @see #startForCamera(Provider, ContentFileProvider, BaseOnError)
-     */
-    public static void startForCamera(final Provider provider, final OnError result) {
-        try {
-            final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
-
-            startForCamera(provider, captureFileURI, result);
-        } catch (IOException e) {
-            result.onError(e);
-        }
-    }
-
-    /**
      * Start the camera application.
      *
      * @param provider Source {@link Provider}.
-     * @param fileProvider provides the necessary file for the camera to save into
      * @param result The camera open action can fail so capture the result.
      */
-    public static void startForCamera(final Provider provider, final ContentFileProvider fileProvider, final BaseOnError result) {
-        Uri captureFileURI;
-        try{
-            File photoFile =  fileProvider.createFile();
-            captureFileURI = fileProvider.toUri(photoFile);
-            persistUri(provider.getContext(), photoFile.toURI().toString());
-        } catch (Exception e) {
-            result.onFileCreationError(e);
-            return;
-        }
-
-        startForCamera(provider, captureFileURI, result);
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    public static void startForCamera(final Provider provider, final Uri captureFileURI, final OnError result) {
-
+    public static void startForCamera(final Provider provider, final OnError result) {
         try {
+            final Uri captureFileURI = createTempImageFileAndPersistUri(provider);
+
             final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    .putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI)
-                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                .putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI)
+                .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
             startFor(provider, intent, MediaPickerRequest.REQUEST_CAPTURE.getCode());
 
-        } catch (IOException e) {
-            result.onError(e);
+        } catch (final Exception e) {
+            result.onError(new IOException("Unable to create temporary file.", e));
         }
     }
 
@@ -178,10 +138,8 @@ public class MediaPicker {
      * @param result Result callbacks.
      */
     private static void startForImageCrop(final Provider provider, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
-
         try {
-
-            final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
+            final Uri captureFileURI = createTempImageFileAndPersistUri(provider);
 
             final CropImageIntentBuilder intentBuilder = new CropImageIntentBuilder(outputWidth, outputHeight, captureFileURI);
 
@@ -322,17 +280,6 @@ public class MediaPicker {
     }
 
     /**
-     * @deprecated Implement your own {@link ContentFileProvider} and use
-     *      {@link #createTempImageFileAndPersistUri(Context, ContentFileProvider)}.
-     *      For devices 24+ you must use a {@link android.support.v4.content.FileProvider} content URI.
-     *
-     * @see #createTempImageFileAndPersistUri(Context, ContentFileProvider)
-     */
-    private static Uri createTempImageFileAndPersistUri(final Context context) throws IOException {
-        return createTempImageFileAndPersistUri(context, new MediaPickerFile.DefaultContentFileProvider());
-    }
-
-    /**
      * Create a temporary image file and persist it for later retrieval.  We use shared
      * preferences here in the case that we lose our current
      * instance by the time the activity returns a result.
@@ -344,12 +291,11 @@ public class MediaPicker {
      *
      * @throws IOException Throws if cannot be created or persisted.
      */
-    private static Uri createTempImageFileAndPersistUri(final Context context, ContentFileProvider fileProvider) throws IOException {
+    private static Uri createTempImageFileAndPersistUri(final Provider provider) throws IOException {
+        final File photoFile = provider.createFile();
+        final Uri captureFileURI = provider.toUri(photoFile);
 
-        final File file = fileProvider.createFile();
-        final Uri captureFileURI = fileProvider.toUri(file);
-
-        persistUri(context, captureFileURI.toString());
+        persistUri(provider.getContext(), photoFile.toURI().toString());
 
         return captureFileURI;
     }
@@ -438,11 +384,6 @@ public class MediaPicker {
         void onError(final IOException e);
     }
 
-    public static abstract class BaseOnError implements OnError {
-
-        public void onFileCreationError(final Exception e) { }
-    }
-
     /**
      * Complete result callback, can also throw IO errors or
      * a cancellation result from the user.
@@ -455,12 +396,19 @@ public class MediaPicker {
     }
 
     /**
-     * Knows how to create a file to be used by the MediaPicker to save images.
+     * Provider interface used to drive the operation of the picker.
+     *
+     * Recommended to be implemented on top of a {@link Activity} or {@link android.app.Fragment}
+     * lifecycle object as they provide the most direct implementation of the context.
      *
      * For API 24+ you must use a {@link android.support.v4.content.FileProvider} content URI.
      */
-    @SuppressWarnings("JavadocReference")
-    public interface ContentFileProvider {
+    public interface Provider {
+
+        Context getContext();
+
+        void startActivityForResult(final Intent intent, final int requestCode);
+
         File createFile() throws IOException;
 
         /**
@@ -472,17 +420,5 @@ public class MediaPicker {
          *
          */
         Uri toUri(File file);
-    }
-
-    /**
-     * Provider for context and start activity for
-     * result.  Typically should be a target
-     * activity fragment, or app compat fragment instance.
-     */
-    public interface Provider {
-
-        Context getContext();
-
-        void startActivityForResult(final Intent intent, final int requestCode);
     }
 }

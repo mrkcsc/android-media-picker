@@ -12,14 +12,12 @@ import android.util.Log;
 
 import com.miguelgaeta.media_picker.MediaPicker;
 import com.miguelgaeta.media_picker.MediaPickerEncoder;
+import com.miguelgaeta.media_picker.MediaPickerFile;
 import com.miguelgaeta.media_picker.MediaPickerRequest;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 @SuppressWarnings({"ConstantConditions", "CodeBlock2Expr"})
 public class AppActivity extends AppCompatActivity implements MediaPicker.Provider {
@@ -41,20 +39,10 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                 Log.e("MediaPicker", "Permission result: " + permission);
             });
 
-        findViewById(R.id.activity_open_camera_provider).setOnClickListener(v -> MediaPicker.startForCamera(
-                AppActivity.this,
-                new MyContentFileProvider(),
-                new MediaPicker.BaseOnError() {
-                    @Override
-                    public void onError(final IOException e) {
-                        Log.e("MediaPicker", "Start for camera error.", e);
-                    }
+        findViewById(R.id.activity_open_camera_provider).setOnClickListener(v -> MediaPicker.startForCamera(this, e -> {
 
-                    @Override
-                    public void onFileCreationError(final Exception e) {
-                        Log.e("MediaPicker", "Creating output file error.", e);
-                    }
-                }));
+            Log.e("MediaPicker", "Start for camera error.", e);
+        }));
 
         findViewById(R.id.activity_open_gallery).setOnClickListener(v -> MediaPicker.startForGallery(this, e -> {
 
@@ -127,22 +115,15 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
         return this;
     }
 
-    private class MyContentFileProvider implements MediaPicker.ContentFileProvider {
-        @Override
-        public File createFile() throws IOException {
-            File imagePath = getExternalFilesDir("images");
+    @Override
+    public File createFile() throws IOException {
+        return MediaPickerFile.create(getFilesDir(), "images", ".jpg");
+    }
 
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-            String imageFileName = "img_" + timeStamp;
-            return File.createTempFile(imageFileName, ".jpg", imagePath);
+    @Override
+    public Uri toUri(final File file) {
+        final String authority = BuildConfig.APPLICATION_ID + ".file-provider";
 
-        }
-
-        @Override
-        public Uri toUri(final File file) {
-            return FileProvider.getUriForFile(AppActivity.this,
-                    BuildConfig.APPLICATION_ID + ".fileprovider",
-                    file);
-        }
+        return FileProvider.getUriForFile(this, authority, file);
     }
 }
