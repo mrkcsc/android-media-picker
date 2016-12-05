@@ -85,9 +85,9 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
             }
 
             @Override
-            public void onSuccess(File mediaFile, MediaPickerRequest request) {
+            public void onSuccess(final File mediaFile, final String mimeType, MediaPickerRequest request) {
 
-                Log.e("MediaPicker", "Got file result: " + mediaFile + " for code: " + request);
+                Log.e("MediaPicker", "Got file result: '" + mediaFile + "', with mime type: '" + mimeType + "', for code: '" + request + "'.");
 
                 if (request != MediaPickerRequest.REQUEST_CROP) {
 

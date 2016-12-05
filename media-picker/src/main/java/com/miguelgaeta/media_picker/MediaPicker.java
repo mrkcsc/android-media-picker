@@ -12,16 +12,14 @@ import com.android.camera.CropImageIntentBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by Miguel Gaeta on 2/10/16.
  */
-@SuppressWarnings({"UnusedDeclaration", "DefaultFileTemplate"})
+@SuppressWarnings({"UnusedDeclaration", "DefaultFileTemplate", "JavadocReference"})
 public class MediaPicker {
 
-    static final String NAME = "media_picker";
+    private static final String NAME = "media_picker";
 
     /**
      * @see #openMediaChooser(Provider, String, OnError)
@@ -89,7 +87,7 @@ public class MediaPicker {
      * @param result The camera open action can fail so capture the result.
      */
     public static void startForCamera(final Provider provider, final ContentFileProvider fileProvider, final BaseOnError result) {
-        Uri captureFileURI = null;
+        Uri captureFileURI;
         try{
             File photoFile =  fileProvider.createFile();
             captureFileURI = fileProvider.toUri(photoFile);
@@ -102,6 +100,7 @@ public class MediaPicker {
         startForCamera(provider, captureFileURI, result);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static void startForCamera(final Provider provider, final Uri captureFileURI, final OnError result) {
 
         try {
@@ -246,11 +245,12 @@ public class MediaPicker {
 
                 case Activity.RESULT_OK:
 
-                    final File file = MediaPickerUri.resolveToFile(context, handleActivityUriResult(context, request, data));
+                    final Uri uri = handleActivityUriResult(context, request, data);
+                    final File file = MediaPickerUri.resolveToFile(context, uri);
 
                     refreshSystemMediaScanDataBase(context, file);
 
-                    result.onSuccess(file, request);
+                    result.onSuccess(file, MimeType.getMimeType(context, uri), request);
 
                     break;
 
@@ -283,7 +283,7 @@ public class MediaPicker {
      *
      * @return File URI.
      *
-     * @throws IOException
+     * @throws IOException Error thrown when no result can be extracted.
      */
     private static Uri handleActivityUriResult(final Context context, final MediaPickerRequest request, final Intent data) throws IOException {
 
@@ -342,7 +342,7 @@ public class MediaPicker {
      *
      * @return Uri of the created file.
      *
-     * @throws IOException
+     * @throws IOException Throws if cannot be created or persisted.
      */
     private static Uri createTempImageFileAndPersistUri(final Context context, ContentFileProvider fileProvider) throws IOException {
 
@@ -350,6 +350,7 @@ public class MediaPicker {
         final Uri captureFileURI = fileProvider.toUri(file);
 
         persistUri(context, captureFileURI.toString());
+
         return captureFileURI;
     }
 
@@ -418,6 +419,7 @@ public class MediaPicker {
      * Refresh so file appears in associated
      * gallery and media explorer applications.
      */
+    @SuppressWarnings("WeakerAccess")
     public static void refreshSystemMediaScanDataBase(final Context context, final File file) {
         final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 
@@ -438,9 +440,7 @@ public class MediaPicker {
 
     public static abstract class BaseOnError implements OnError {
 
-        public void onFileCreationError(final Exception e) {
-            return;
-        }
+        public void onFileCreationError(final Exception e) { }
     }
 
     /**
@@ -449,25 +449,9 @@ public class MediaPicker {
      */
     public interface OnResult extends OnError {
 
-        void onSuccess(final File mediaFile, MediaPickerRequest request);
+        void onSuccess(final File mediaFile, final String mimeType, final MediaPickerRequest request);
 
         void onCancelled();
-
-        /**
-         * Most consumers only care about the success callback.
-         */
-        abstract class Default implements OnResult {
-
-            @Override
-            public void onCancelled() {
-
-            }
-
-            @Override
-            public void onError(IOException e) {
-
-            }
-        }
     }
 
     /**
@@ -475,6 +459,7 @@ public class MediaPicker {
      *
      * For API 24+ you must use a {@link android.support.v4.content.FileProvider} content URI.
      */
+    @SuppressWarnings("JavadocReference")
     public interface ContentFileProvider {
         File createFile() throws IOException;
 
