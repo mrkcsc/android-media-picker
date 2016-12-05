@@ -189,15 +189,21 @@ public class MediaPickerUri {
             case AUTHORITY_DOWNLOADS_DOCUMENT: {
 
                 final Uri contentUri = Uri.parse("content://downloads/public_downloads");
-                final Uri contentUriAppended = ContentUris.withAppendedId(contentUri, Long.valueOf(documentId));
 
-                final String path = getDataColumn(context, contentUriAppended, null, null);
+                try {
+                    final Uri contentUriAppended = ContentUris.withAppendedId(contentUri, Long.valueOf(documentId));
 
-                if (path == null) {
-                    throw new IOException("Unable to find downloaded document path.");
+                    final String path = getDataColumn(context, contentUriAppended, null, null);
+
+                    if (path == null) {
+                        throw new IOException("Unable to find downloaded document path.");
+                    }
+
+                    return path;
+
+                } catch (NumberFormatException e) {
+                    throw new IOException("Unable to fetch document id.");
                 }
-
-                return path;
             }
             case AUTHORITY_MEDIA_DOCUMENT: {
 
