@@ -1,3 +1,7 @@
+## 1.3.2 - 2016-06-22
+
+- Deprecate old API in favor of using FileProvers.
+
 ## 1.3.1 - 2016-06-22
 
 - Add support for using FileProvider URIs.
