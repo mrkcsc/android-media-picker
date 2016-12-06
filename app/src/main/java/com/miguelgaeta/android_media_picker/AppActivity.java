@@ -9,7 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.miguelgaeta.media_picker.MediaPicker;
-import com.miguelgaeta.media_picker.MediaPickerEncoder;
+import com.miguelgaeta.media_picker.Encoder;
 import com.miguelgaeta.media_picker.MediaPickerRequest;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -70,9 +70,19 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
             }
 
             @Override
-            public void onSuccess(final File mediaFile, final String mimeType, MediaPickerRequest request) {
+            public void onSuccess(final File file, final String mimeType, MediaPickerRequest request) {
 
-                Log.e("MediaPicker", "Got file result: '" + mediaFile + "', with mime type: '" + mimeType + "', for code: '" + request + "'.");
+                Log.e("MediaPicker", "Got file result: '" + file + "', with mime type: '" + mimeType + "', for code: '" + request + "'.");
+
+                if (request == MediaPickerRequest.REQUEST_GALLERY) {
+                    try {
+                        final String encoded = Encoder.getDataUrl(mimeType, file);
+
+                        Log.e("MediaPicker", "Encoded data url: " + encoded);
+                    } catch (final IOException e) {
+                        Log.e("MediaPicker", "Encoded data url failure.", e);
+                    }
+                }
 
                 if (request != MediaPickerRequest.REQUEST_CROP) {
 
@@ -80,22 +90,10 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                     final int paramWidth = 128;
                     final int paramHeight = 128;
 
-                    MediaPicker.startForImageCrop(AppActivity.this, mediaFile, paramWidth, paramHeight, paramColor, e -> {
+                    MediaPicker.startForImageCrop(AppActivity.this, file, paramWidth, paramHeight, paramColor, e -> {
 
                         Log.e("MediaPicker", "Open cropper error.", e);
                     });
-
-                } else {
-
-                    try {
-
-                        @SuppressWarnings("unused")
-                        final String dataUrl = MediaPickerEncoder.toDataUrl(mediaFile);
-
-                    } catch (IOException e) {
-
-                        Log.e("MediaPicker", "Unable to get data url.", e);
-                    }
                 }
             }
 
