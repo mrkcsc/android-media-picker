@@ -74,6 +74,16 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
 
                 Log.e("MediaPicker", "Got file result: '" + file + "', with mime type: '" + mimeType + "', for code: '" + request + "'.");
 
+                if (request == MediaPickerRequest.REQUEST_GALLERY) {
+                    try {
+                        final String encoded = Encoder.getDataUrl(mimeType, file);
+
+                        Log.e("MediaPicker", "Encoded data url: " + encoded);
+                    } catch (final IOException e) {
+                        Log.e("MediaPicker", "Encoded data url failure.", e);
+                    }
+                }
+
                 if (request != MediaPickerRequest.REQUEST_CROP) {
 
                     final int paramColor = ContextCompat.getColor(AppActivity.this, android.R.color.black);
@@ -84,18 +94,6 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
 
                         Log.e("MediaPicker", "Open cropper error.", e);
                     });
-
-                } else {
-
-                    try {
-
-                        @SuppressWarnings("unused")
-                        final String dataUrl = Encoder.getDataUrl(mimeType, file);
-
-                    } catch (IOException e) {
-
-                        Log.e("MediaPicker", "Unable to get data url.", e);
-                    }
                 }
             }
 
