@@ -1,165 +1,106 @@
 package com.miguelgaeta.media_picker;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 /**
  * Created by Miguel Gaeta on 2/10/16.
  */
-@SuppressWarnings("UnusedDeclaration")
+@SuppressWarnings({"UnusedDeclaration", "WeakerAccess"})
 public class MediaPickerEncoder {
 
-    private static final Bitmap.CompressFormat defaultFormat = Bitmap.CompressFormat.JPEG;
-    private static final int defaultFormatQuality = 100;
+    /**
+     * Fetch target {@link InputStream} as a data url representation with
+     * associated {@link Byte} stream encoded as a {@link Base64} string.
+     *
+     * @param inputStream Target {@link InputStream}.
+     * @param mimeType Target mime type.
+     *
+     * @return Associated data url.
+     *
+     * @throws IOException Failure to encode result.
+     */
+    public static String getDataUrl(final @NonNull String mimeType,
+                                    final @NonNull InputStream inputStream) throws IOException {
+        final String template = "data:%s;base64,%s";
+
+        return String.format(template, mimeType, getBase64EncodedString(inputStream));
+    }
+
 
     /**
-     * Converts a bitmap into a Base64 encoded data URL.
-     *
-     * @param bitmap Input bitmap.
-     * @param mimeType Input mime type.
-     * @param format Compression format.
-     * @param quality Compression quality.
-     *
-     * @return Base64 encoded data URL.
-     *
-     * @throws IOException
+     * @see #getDataUrl(String, InputStream)
      */
-    public static String toDataUrl(final Bitmap bitmap, final String mimeType, final Bitmap.CompressFormat format, final int quality) throws IOException {
+    public static String getDataUrl(final @NonNull String mimeType,
+                                    final @NonNull Bitmap bitmap) throws IOException {
+        final int byteSize = bitmap.getRowBytes() * bitmap.getHeight();
 
-        if (bitmap == null) {
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(byteSize);
 
-            throw new IOException("Bitmap cannot be null.");
+        bitmap.copyPixelsToBuffer(byteBuffer);
+
+        final byte[] byteArray = byteBuffer.array();
+
+        final InputStream inputStream = new ByteArrayInputStream(byteArray);
+
+        return getDataUrl(mimeType, inputStream);
+    }
+
+    /**
+     * @see #getDataUrl(String, InputStream)
+     */
+    public static String getDataUrl(final @NonNull String mimeType,
+                                    final @NonNull File file) throws IOException  {
+        return getDataUrl(mimeType, new FileInputStream(file));
+    }
+
+    /**
+     * @see #getDataUrl(String, File)
+     */
+    public static String getDataUrl(final @NonNull String mimeType,
+                                    final @NonNull String filePath) throws IOException  {
+        return getDataUrl(mimeType, new File(filePath));
+    }
+
+    /**
+     * Fetch target {@link InputStream} as a {@link Base64} encoded string.
+     *
+     * @param inputStream Target {@link InputStream}.
+     * @param flags Target {@link Base64} encoding flags.
+     *
+     * @return Associated encoded string.
+     *
+     * @throws IOException Failure to encode result.
+     */
+    public static String getBase64EncodedString(final InputStream inputStream, final int flags) throws IOException {
+        final byte[] buffer = new byte[8192];
+
+        int bytesRead;
+
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            output.write(buffer, 0, bytesRead);
         }
 
-        if (mimeType == null) {
+        final byte[] bytes = output.toByteArray();
 
-            throw new IOException("Mime type cannot be null.");
-        }
-
-        return "data:" + mimeType + ";base64," + asEncodedBase64String(bitmap, format, quality);
+        return Base64.encodeToString(bytes, flags);
     }
 
     /**
-     * @see #toDataUrl(Bitmap, String, Bitmap.CompressFormat, int)
+     * @see #getBase64EncodedString(InputStream, int)
      */
-    public static String toDataUrl(final Bitmap bitmap, final String mimeType) throws IOException {
-
-        return toDataUrl(bitmap, mimeType, defaultFormat, defaultFormatQuality);
-    }
-
-    /**
-     * Converts a file into a Base64 encoded data URL.
-     *
-     * @param filePath Path to file.
-     * @param mimeType Optional file mime type.
-     * @param format Compression format.
-     * @param quality Compression quality.
-     *
-     * @return Base64 encoded data URL.
-     *
-     * @throws IOException
-     */
-    public static String toDataUrl(final String filePath, final String mimeType, final Bitmap.CompressFormat format, final int quality) throws IOException  {
-
-        if (filePath == null) {
-
-            throw new IOException("File path cannot be null.");
-        }
-
-        final BitmapFactory.Options opt = new BitmapFactory.Options();
-        final Bitmap bitmap = BitmapFactory.decodeFile(filePath, opt);
-
-        return toDataUrl(bitmap, mimeType != null ? mimeType : opt.outMimeType, format, quality);
-    }
-
-    /**
-     * @see #toDataUrl(String, String, Bitmap.CompressFormat, int)
-     */
-    public static String toDataUrl(final String filePath, final String mimeType) throws IOException {
-
-        return toDataUrl(filePath, mimeType, defaultFormat, defaultFormatQuality);
-    }
-
-    /**
-     * @see #toDataUrl(String, String)
-     */
-    public static String toDataUrl(String filePath) throws IOException  {
-
-        return toDataUrl(filePath, null);
-    }
-
-    /**
-     * Converts a file into a Base64 encoded data URL.
-     *
-     * @param file Input {@link File}
-     * @param mimeType Optional file mime type.
-     * @param format Compression format.
-     * @param quality Compression quality.
-     *
-     * @return Base64 encoded data URL.
-     *
-     * @throws IOException
-     */
-    public static String toDataUrl(final File file, String mimeType, final Bitmap.CompressFormat format, final int quality) throws IOException  {
-
-        if (file == null) {
-
-            throw new IOException("File cannot be null.");
-        }
-
-        return toDataUrl(file.getAbsolutePath(), mimeType, format, quality);
-    }
-
-    /**
-     * @see #toDataUrl(File, String, Bitmap.CompressFormat, int)
-     */
-    public static String toDataUrl(final File file, String mimeType) throws IOException  {
-
-        return toDataUrl(file, mimeType, defaultFormat, defaultFormatQuality);
-    }
-
-    /**
-     * @see #toDataUrl(File, String)
-     */
-    public static String toDataUrl(File file) throws IOException  {
-
-        return toDataUrl(file, null);
-    }
-
-    /**
-     * Given a bitmap input, return it as an encoded Base64 string.
-     *
-     * @param bitmap Source {@link Bitmap} to encode.
-     * @param format Specified compression {@link android.graphics.Bitmap.CompressFormat}.
-     * @param quality Desired compression quality.
-     *
-     * @return An encoded Base64 string representation of the input bitmap.
-     *
-     * @throws IOException Can throw on {@link ByteArrayOutputStream} close or invalid bitmap input.
-     */
-    private static String asEncodedBase64String(final Bitmap bitmap, final Bitmap.CompressFormat format, final int quality) throws IOException {
-
-        if (bitmap == null || format == null) {
-
-            throw new IOException("Cannot encode a null bitmap or compression format.");
-        }
-
-        final ByteArrayOutputStream bitmapData = new ByteArrayOutputStream();
-
-        bitmap.compress(format, quality, bitmapData);
-
-        final String encodedData = Base64.encodeToString(bitmapData.toByteArray(), Base64.NO_WRAP);
-
-        bitmap.recycle();
-
-        bitmapData.flush();
-        bitmapData.close();
-
-        return encodedData;
+    public static String getBase64EncodedString(final InputStream inputStream) throws IOException {
+        return getBase64EncodedString(inputStream, Base64.NO_WRAP);
     }
 }

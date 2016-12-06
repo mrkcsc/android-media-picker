@@ -70,9 +70,9 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
             }
 
             @Override
-            public void onSuccess(final File mediaFile, final String mimeType, MediaPickerRequest request) {
+            public void onSuccess(final File file, final String mimeType, MediaPickerRequest request) {
 
-                Log.e("MediaPicker", "Got file result: '" + mediaFile + "', with mime type: '" + mimeType + "', for code: '" + request + "'.");
+                Log.e("MediaPicker", "Got file result: '" + file + "', with mime type: '" + mimeType + "', for code: '" + request + "'.");
 
                 if (request != MediaPickerRequest.REQUEST_CROP) {
 
@@ -80,7 +80,7 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                     final int paramWidth = 128;
                     final int paramHeight = 128;
 
-                    MediaPicker.startForImageCrop(AppActivity.this, mediaFile, paramWidth, paramHeight, paramColor, e -> {
+                    MediaPicker.startForImageCrop(AppActivity.this, file, paramWidth, paramHeight, paramColor, e -> {
 
                         Log.e("MediaPicker", "Open cropper error.", e);
                     });
@@ -90,7 +90,7 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                     try {
 
                         @SuppressWarnings("unused")
-                        final String dataUrl = MediaPickerEncoder.toDataUrl(mediaFile);
+                        final String dataUrl = MediaPickerEncoder.getDataUrl(mimeType, file);
 
                     } catch (IOException e) {
 
