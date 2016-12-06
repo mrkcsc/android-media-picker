@@ -21,8 +21,11 @@ android {
 
 dependencies {
 
-    // Crop images android library.
-    compile 'me.villani.lorenzo.android:android-cropimage:1.1.2'
+    //noinspection GradleDynamicVersion || File provider compatibility.
+    compile 'com.android.support:support-core-utils:25.+'
+
+    //noinspection GradleDynamicVersion || File cropping utility.
+    compile 'me.villani.lorenzo.android:android-cropimage:1.+'
 }
 
 apply from: '../build.release-aar.gradle'
