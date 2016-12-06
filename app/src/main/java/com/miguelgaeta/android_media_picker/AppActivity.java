@@ -9,7 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.miguelgaeta.media_picker.MediaPicker;
-import com.miguelgaeta.media_picker.MediaPickerEncoder;
+import com.miguelgaeta.media_picker.Encoder;
 import com.miguelgaeta.media_picker.MediaPickerRequest;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -90,7 +90,7 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                     try {
 
                         @SuppressWarnings("unused")
-                        final String dataUrl = MediaPickerEncoder.getDataUrl(mimeType, file);
+                        final String dataUrl = Encoder.getDataUrl(mimeType, file);
 
                     } catch (IOException e) {
 

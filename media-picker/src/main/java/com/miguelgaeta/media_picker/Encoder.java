@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
  * Created by Miguel Gaeta on 2/10/16.
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"})
-public class MediaPickerEncoder {
+public class Encoder {
 
     /**
      * Fetch target {@link InputStream} as a data url representation with
