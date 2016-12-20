@@ -14,9 +14,10 @@ import android.webkit.MimeTypeMap;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class MimeType {
 
-    public static final String IMAGES = "images/*";
+    public static final String ALL = "*/*";
+    public static final String IMAGES = "image/*";
     public static final String AUDIO ="audio/*";
-    public static final String VIDEOS = "videos/*";
+    public static final String VIDEOS = "video/*";
     public static final String TEXT = "text/*";
     public static final String APPLICATIONS = "application/*";
 

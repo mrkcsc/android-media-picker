@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.miguelgaeta.media_picker.Filter;
 import com.miguelgaeta.media_picker.MediaPicker;
 import com.miguelgaeta.media_picker.Encoder;
 import com.miguelgaeta.media_picker.MediaPickerRequest;
@@ -52,7 +52,7 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
 
             Log.e("MediaPicker", "Start for gallery with images error.", e);
 
-        }, Filter.fromMimeTypes(MimeType.IMAGES)));
+        }, MimeType.IMAGES));
 
         findViewById(R.id.activity_open_documents).setOnClickListener(v -> MediaPicker.startForDocuments(this, e -> {
 
@@ -75,6 +75,9 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
             public void onError(IOException e) {
 
                 Log.e("MediaPicker", "Got file error.", e);
+
+                Toast
+                    .makeText(getContext(), "Got file error:" + e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override

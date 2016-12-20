@@ -7,6 +7,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,12 +35,12 @@ class MediaPickerChooser {
      *
      * @throws IOException
      */
-    static Intent getMediaChooserIntent(final PackageManager packageManager,
-                                        final String chooserTitle,
-                                        final Uri captureFileURI,
-                                        final Filter filter) throws IOException {
+    static Intent getMediaChooserIntent(final @NonNull PackageManager packageManager,
+                                        final @NonNull String chooserTitle,
+                                        final @NonNull Uri captureFileURI,
+                                        final @NonNull String mimeType) throws IOException {
 
-        final Collection<Intent> intents = getMediaActivityIntents(packageManager, captureFileURI, filter);
+        final Collection<Intent> intents = getMediaActivityIntents(packageManager, captureFileURI, mimeType);
 
         if (intents.isEmpty()) {
 
@@ -74,13 +76,13 @@ class MediaPickerChooser {
      *
      * @return Collection of media activity intents.
      */
-    private static Collection<Intent> getMediaActivityIntents(final PackageManager packageManager,
-                                                              final Uri captureFileURI,
-                                                              final Filter filter) {
+    private static Collection<Intent> getMediaActivityIntents(final @NonNull PackageManager packageManager,
+                                                              final @NonNull Uri captureFileURI,
+                                                              final @NonNull String mimeType) {
 
         final Intent typeCamera = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        final Intent typeGallery = filter.getIntent(Intent.ACTION_PICK);
-        final Intent typeDocuments = filter.getIntent(Intent.ACTION_GET_CONTENT);
+        final Intent typeGallery = MediaPicker.getIntent(Intent.ACTION_PICK, mimeType);
+        final Intent typeDocuments = MediaPicker.getIntent(Intent.ACTION_GET_CONTENT, mimeType);
 
         final Map<String, Intent> intents = new LinkedHashMap<>();
 
@@ -106,7 +108,10 @@ class MediaPickerChooser {
      * @param filterIntent Filter by {@link Intent}.
      * @param modifier Callback to modify each matched {@link Intent}.
      */
-    private static void getIntentActivities(final Map<String, Intent> intents, final PackageManager packageManager, final Intent filterIntent, final IntentModifier modifier) {
+    private static void getIntentActivities(final @NonNull Map<String, Intent> intents,
+                                            final @NonNull PackageManager packageManager,
+                                            final @NonNull Intent filterIntent,
+                                            final @Nullable IntentModifier modifier) {
 
         for (final ResolveInfo resolveInfo : packageManager.queryIntentActivities(filterIntent, 0)) {
 

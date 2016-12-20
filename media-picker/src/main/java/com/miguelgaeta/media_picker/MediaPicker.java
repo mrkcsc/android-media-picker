@@ -6,8 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 
 import com.android.camera.CropImageIntentBuilder;
 
@@ -27,13 +30,13 @@ public class MediaPicker {
      * @param provider Source {@link Provider}.
      * @param title Chooser title.
      * @param onError {@link OnError}
-     * @param filter {@link Filter}
+     * @param mimeType Mime type filter.
      */
-    public static void openMediaChooser(final Provider provider, final String title, final OnError onError, final Filter filter) {
+    public static void openMediaChooser(final Provider provider, final String title, final OnError onError, final String mimeType) {
         try {
             final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
 
-            final Intent intent = MediaPickerChooser.getMediaChooserIntent(provider.getContext().getPackageManager(), title, captureFileURI, filter);
+            final Intent intent = MediaPickerChooser.getMediaChooserIntent(provider.getContext().getPackageManager(), title, captureFileURI, mimeType);
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_CHOOSER.getCode());
 
@@ -44,10 +47,10 @@ public class MediaPicker {
     }
 
     /**
-     * @see #openMediaChooser(Provider, String, OnError, Filter)
+     * @see #openMediaChooser(Provider, String, OnError, String)
      */
     public static void openMediaChooser(final Provider provider, final String title, final OnError onError) {
-        openMediaChooser(provider, title, onError, Filter.empty());
+        openMediaChooser(provider, title, onError, MimeType.ALL);
     }
 
     /**
@@ -78,16 +81,12 @@ public class MediaPicker {
      *
      * @param provider {@link Provider}
      * @param onError {@link OnError}
-     * @param filter {@link Filter}
+     * @param mimeType Mime type filter.
      */
-    public static void startForGallery(final Provider provider, final OnError onError, final Filter filter) {
+    public static void startForGallery(final Provider provider, final OnError onError, final String mimeType) {
         try {
 
-            final Intent intent = new Intent(Intent.ACTION_PICK);
-
-            intent.setType("image/*|video/*");
-            //intent.addCategory(Intent.CATEGORY_OPENABLE);
-            //ntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "image/*" });
+            final Intent intent = getIntent(Intent.ACTION_PICK, mimeType);
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_GALLERY.getCode());
 
@@ -98,10 +97,10 @@ public class MediaPicker {
     }
 
     /**
-     * @see #startForGallery(Provider, OnError, Filter)
+     * @see #startForGallery(Provider, OnError, String)
      */
     public static void startForGallery(final Provider provider, final OnError onError) {
-        startForGallery(provider, onError, Filter.empty());
+        startForGallery(provider, onError, MimeType.ALL);
     }
 
     /**
@@ -109,13 +108,13 @@ public class MediaPicker {
      *
      * @param provider Source {@link Provider}.
      * @param onError {@link OnError}
-     * @param filter {@link Filter}
+     * @param mimeType Mime type filter.
      */
-    public static void startForDocuments(final Provider provider, final OnError onError, final Filter filter) {
+    public static void startForDocuments(final Provider provider, final OnError onError, final String mimeType) {
 
         try {
 
-            final Intent intent = filter.getIntent(Intent.ACTION_GET_CONTENT);
+            final Intent intent = getIntent(Intent.ACTION_GET_CONTENT, mimeType);
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_DOCUMENTS.getCode());
 
@@ -126,10 +125,10 @@ public class MediaPicker {
     }
 
     /**
-     * @see #startForDocuments(Provider, OnError, Filter)
+     * @see #startForDocuments(Provider, OnError, String)
      */
     public static void startForDocuments(final Provider provider, final OnError onError) {
-        startForDocuments(provider, onError, Filter.empty());
+        startForDocuments(provider, onError, MimeType.ALL);
     }
 
     /**
@@ -397,6 +396,22 @@ public class MediaPicker {
         mediaScanIntent.setData(Uri.fromFile(file));
 
         context.sendBroadcast(mediaScanIntent);
+    }
+
+    /**
+     * Fetch intent for target action using the
+     * provided mime type.
+     */
+    static Intent getIntent(final @NonNull String action, final @NonNull String mimeType) {
+        final Intent intent = new Intent(action);
+
+        intent.setType(mimeType);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeType);
+        }
+
+        return intent;
     }
 
     /**
