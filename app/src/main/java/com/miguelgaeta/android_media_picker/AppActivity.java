@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.miguelgaeta.media_picker.MediaPicker;
 import com.miguelgaeta.media_picker.Encoder;
 import com.miguelgaeta.media_picker.MediaPickerRequest;
+import com.miguelgaeta.media_picker.MimeType;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
@@ -46,6 +48,12 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
             Log.e("MediaPicker", "Start for gallery error.", e);
         }));
 
+        findViewById(R.id.activity_open_gallery_with_image).setOnClickListener(v -> MediaPicker.startForGallery(this, e -> {
+
+            Log.e("MediaPicker", "Start for gallery with images error.", e);
+
+        }, MimeType.IMAGES));
+
         findViewById(R.id.activity_open_documents).setOnClickListener(v -> MediaPicker.startForDocuments(this, e -> {
 
             Log.e("MediaPicker", "Start for documents error.", e);
@@ -67,6 +75,9 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
             public void onError(IOException e) {
 
                 Log.e("MediaPicker", "Got file error.", e);
+
+                Toast
+                    .makeText(getContext(), "Got file error:" + e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -84,7 +95,7 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                     }
                 }
 
-                if (request != MediaPickerRequest.REQUEST_CROP) {
+                if (request != MediaPickerRequest.REQUEST_CROP && MimeType.isImage(mimeType)) {
 
                     final int paramColor = ContextCompat.getColor(AppActivity.this, android.R.color.black);
                     final int paramWidth = 128;

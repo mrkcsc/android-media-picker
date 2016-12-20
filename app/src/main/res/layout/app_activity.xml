@@ -19,7 +19,7 @@
             android:background="#ccc"
             android:gravity="center"
             android:textSize="12sp"
-            android:text="Open Camera w/ FileProvider"/>
+            android:text="Open Camera"/>
 
         <TextView
             android:id="@+id/activity_open_gallery"
@@ -30,6 +30,16 @@
             android:gravity="center"
             android:textSize="12sp"
             android:text="Open Gallery"/>
+
+        <TextView
+            android:id="@+id/activity_open_gallery_with_image"
+            android:layout_width="200dp"
+            android:layout_height="25dp"
+            android:layout_marginBottom="10dp"
+            android:background="#ccc"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:text="Open Gallery Filter Images"/>
 
         <TextView
             android:id="@+id/activity_open_documents"

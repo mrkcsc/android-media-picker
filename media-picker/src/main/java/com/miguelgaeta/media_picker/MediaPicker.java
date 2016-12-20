@@ -6,8 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 
 import com.android.camera.CropImageIntentBuilder;
 
@@ -17,48 +20,46 @@ import java.io.IOException;
 /**
  * Created by Miguel Gaeta on 2/10/16.
  */
-@SuppressWarnings({"UnusedDeclaration", "DefaultFileTemplate", "JavadocReference"})
+@SuppressWarnings({"UnusedDeclaration", "DefaultFileTemplate", "JavadocReference", "WeakerAccess"})
 public class MediaPicker {
-
-    /**
-     * @see #openMediaChooser(Provider, String, OnError)
-     */
-    public static void openMediaChooser(final Provider provider, final int title, final OnError result) {
-
-        openMediaChooser(provider, provider.getContext().getString(title), result);
-    }
 
     /**
      * Create a chooser intent that matches all types of activities
      * for taking photos or selecting media.
      *
      * @param provider Source {@link Provider}.
-     *
-     * @param title Chooser title string resource.
-     *
-     * @param result Can fail to create the file needed for the camera intents.
+     * @param title Chooser title.
+     * @param onError {@link OnError}
+     * @param mimeType Mime type filter.
      */
-    public static void openMediaChooser(final Provider provider, final String title, final OnError result) {
+    public static void openMediaChooser(final Provider provider, final String title, final OnError onError, final String mimeType) {
         try {
             final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
 
-            final Intent intent = MediaPickerChooser.getMediaChooserIntent(provider.getContext().getPackageManager(), title, captureFileURI);
+            final Intent intent = MediaPickerChooser.getMediaChooserIntent(provider.getContext().getPackageManager(), title, captureFileURI, mimeType);
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_CHOOSER.getCode());
 
         } catch (final IOException e) {
 
-            result.onError(e);
+            onError.onError(e);
         }
+    }
+
+    /**
+     * @see #openMediaChooser(Provider, String, OnError, String)
+     */
+    public static void openMediaChooser(final Provider provider, final String title, final OnError onError) {
+        openMediaChooser(provider, title, onError, MimeType.ALL);
     }
 
     /**
      * Start the camera application.
      *
-     * @param provider Source {@link Provider}.
-     * @param result The camera open action can fail so capture the result.
+     * @param provider {@link Provider}
+     * @param onError {@link OnError}
      */
-    public static void startForCamera(final Provider provider, final OnError result) {
+    public static void startForCamera(final Provider provider, final OnError onError) {
         try {
             final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
 
@@ -71,60 +72,71 @@ public class MediaPicker {
 
         } catch (final IOException e) {
 
-            result.onError(e);
+            onError.onError(e);
         }
     }
 
     /**
      * Start the gallery application directly.
      *
-     * @param provider Source {@link Provider}.
-     *
-     * @param result Failure to open gallery captured in result callback..
+     * @param provider {@link Provider}
+     * @param onError {@link OnError}
+     * @param mimeType Mime type filter.
      */
-    public static void startForGallery(final Provider provider, final OnError result) {
-
+    public static void startForGallery(final Provider provider, final OnError onError, final String mimeType) {
         try {
 
-            final Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            final Intent intent = getIntent(Intent.ACTION_PICK, mimeType);
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_GALLERY.getCode());
 
         } catch (final IOException e) {
 
-            result.onError(e);
+            onError.onError(e);
         }
+    }
+
+    /**
+     * @see #startForGallery(Provider, OnError, String)
+     */
+    public static void startForGallery(final Provider provider, final OnError onError) {
+        startForGallery(provider, onError, MimeType.ALL);
     }
 
     /**
      * Start the documents chooser directly.
      *
      * @param provider Source {@link Provider}.
-     *
-     * @param result The document open action can fail so capture the result.
+     * @param onError {@link OnError}
+     * @param mimeType Mime type filter.
      */
-    public static void startForDocuments(final Provider provider, final OnError result) {
+    public static void startForDocuments(final Provider provider, final OnError onError, final String mimeType) {
 
         try {
 
-            final Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-
-            intent.setType("image/*");
+            final Intent intent = getIntent(Intent.ACTION_GET_CONTENT, mimeType);
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_DOCUMENTS.getCode());
 
         } catch (final IOException e) {
 
-            result.onError(e);
+            onError.onError(e);
         }
+    }
+
+    /**
+     * @see #startForDocuments(Provider, OnError, String)
+     */
+    public static void startForDocuments(final Provider provider, final OnError onError) {
+        startForDocuments(provider, onError, MimeType.ALL);
     }
 
     /**
      * @see #startForImageCrop(Provider, File, int, int, int, OnError)
      */
-    public static void startForImageCrop(final Provider provider, final File file, int outputWidth, int outputHeight, int colorInt, final OnError result) {
+    public static void startForImageCrop(final Provider provider, final File file, int outputWidth, int outputHeight, int colorInt, final OnError onError) {
 
-        startForImageCrop(provider, Uri.fromFile(file), outputWidth, outputHeight, colorInt, result);
+        startForImageCrop(provider, Uri.fromFile(file), outputWidth, outputHeight, colorInt, onError);
     }
 
     /**
@@ -135,9 +147,9 @@ public class MediaPicker {
      * @param outputWidth Cropped file output width.
      * @param outputHeight Cropped file output height.
      * @param colorInt Cropping UI circle color.
-     * @param result Result callbacks.
+     * @param onError Result callbacks.
      */
-    private static void startForImageCrop(final Provider provider, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError result) {
+    private static void startForImageCrop(final Provider provider, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError onError) {
         try {
             final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
 
@@ -153,7 +165,7 @@ public class MediaPicker {
 
         } catch (final IOException e) {
 
-            result.onError(e);
+            onError.onError(e);
         }
     }
 
@@ -186,9 +198,9 @@ public class MediaPicker {
      * @param requestCode Request code, should be defined.
      * @param resultCode Result code.
      * @param data Data containing the result.
-     * @param result Result callbacks.
+     * @param onError Result callbacks.
      */
-    public static void handleActivityResult(final Context context, final int requestCode, final int resultCode, final Intent data, final OnResult result) {
+    public static void handleActivityResult(final Context context, final int requestCode, final int resultCode, final Intent data, final OnResult onError) {
 
         final MediaPickerRequest request = MediaPickerRequest.create(requestCode);
 
@@ -208,7 +220,7 @@ public class MediaPicker {
 
                     refreshSystemMediaScanDataBase(context, file);
 
-                    result.onSuccess(file, MimeType.getMimeType(context, uri), request);
+                    onError.onSuccess(file, MimeType.getMimeType(context, uri), request);
 
                     break;
 
@@ -216,7 +228,7 @@ public class MediaPicker {
 
                     deleteCaptureFileUri(context);
 
-                    result.onCancelled();
+                    onError.onCancelled();
 
                     break;
 
@@ -227,7 +239,7 @@ public class MediaPicker {
 
         } catch (final IOException e) {
 
-            result.onError(e);
+            onError.onError(e);
         }
     }
 
@@ -384,6 +396,22 @@ public class MediaPicker {
         mediaScanIntent.setData(Uri.fromFile(file));
 
         context.sendBroadcast(mediaScanIntent);
+    }
+
+    /**
+     * Fetch intent for target action using the
+     * provided mime type.
+     */
+    static Intent getIntent(final @NonNull String action, final @NonNull String mimeType) {
+        final Intent intent = new Intent(action);
+
+        intent.setType(mimeType);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeType);
+        }
+
+        return intent;
     }
 
     /**

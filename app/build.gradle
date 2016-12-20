@@ -7,9 +7,10 @@ plugins {
 // Application module.
 apply plugin: 'com.android.application'
 
+//noinspection GroovyMissingReturnStatement
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.1'
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         applicationId "com.miguelgaeta.android_media_picker"
@@ -38,7 +39,7 @@ android {
 dependencies {
 
     // Support libraries.
-    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
 
     // Rx Java permissions handler.
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
