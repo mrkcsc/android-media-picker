@@ -83,7 +83,11 @@ public class MediaPicker {
     public static void startForGallery(final Provider provider, final OnError onError, final Filter filter) {
         try {
 
-            final Intent intent = filter.getIntent(Intent.ACTION_PICK);
+            final Intent intent = new Intent(Intent.ACTION_PICK);
+
+            intent.setType("image/*|video/*");
+            //intent.addCategory(Intent.CATEGORY_OPENABLE);
+            //ntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "image/*" });
 
             startFor(provider, intent, MediaPickerRequest.REQUEST_GALLERY.getCode());
 

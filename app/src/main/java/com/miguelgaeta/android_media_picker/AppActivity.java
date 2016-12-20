@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.miguelgaeta.media_picker.Filter;
 import com.miguelgaeta.media_picker.MediaPicker;
 import com.miguelgaeta.media_picker.Encoder;
 import com.miguelgaeta.media_picker.MediaPickerRequest;
@@ -46,6 +47,12 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
 
             Log.e("MediaPicker", "Start for gallery error.", e);
         }));
+
+        findViewById(R.id.activity_open_gallery_with_image).setOnClickListener(v -> MediaPicker.startForGallery(this, e -> {
+
+            Log.e("MediaPicker", "Start for gallery with images error.", e);
+
+        }, Filter.fromMimeTypes(MimeType.IMAGES)));
 
         findViewById(R.id.activity_open_documents).setOnClickListener(v -> MediaPicker.startForDocuments(this, e -> {
 
