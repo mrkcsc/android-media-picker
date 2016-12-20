@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.1'
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         minSdkVersion 15
@@ -28,4 +28,4 @@ dependencies {
     compile 'me.villani.lorenzo.android:android-cropimage:1.+'
 }
 
-apply from: '../build.release-aar.gradle'
+//apply from: '../build.release-aar.gradle'
