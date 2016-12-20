@@ -1,3 +1,7 @@
+## 1.3.3 - 2016-19-22
+
+- Add support for all file types via intent filter.
+
 ## 1.3.2 - 2016-06-22
 
 - Deprecate old API in favor of using FileProvers.
