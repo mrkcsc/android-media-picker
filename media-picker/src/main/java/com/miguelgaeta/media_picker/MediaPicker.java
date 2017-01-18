@@ -5,6 +5,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -15,6 +17,7 @@ import com.android.camera.CropImageIntentBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by Miguel Gaeta on 2/10/16.
@@ -36,6 +39,11 @@ public class MediaPicker {
             final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
 
             final Intent intent = MediaPickerChooser.getMediaChooserIntent(provider.getContext().getPackageManager(), title, captureFileURI, mimeType);
+
+            final Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+            // Grant camera write access just in case user chooses it.
+            grantWriteAccessToURI(provider.getContext(), cameraIntent, captureFileURI);
 
             startFor(provider, intent, RequestType.CHOOSER.getCode());
 
@@ -66,6 +74,8 @@ public class MediaPicker {
                 .putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI)
                 .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            grantWriteAccessToURI(provider.getContext(), intent, captureFileURI);
 
             startFor(provider, intent, RequestType.CAMERA.getCode());
 
@@ -160,7 +170,11 @@ public class MediaPicker {
             intentBuilder.setOutlineColor(colorInt);
             intentBuilder.setScaleUpIfNeeded(true);
 
-            startFor(provider, intentBuilder.getIntent(provider.getContext()), RequestType.CROP.getCode());
+            final Intent intent = intentBuilder.getIntent(provider.getContext());
+
+            grantWriteAccessToURI(provider.getContext(), intent, captureFileURI);
+
+            startFor(provider, intent, RequestType.CROP.getCode());
 
         } catch (final IOException e) {
 
@@ -385,11 +399,31 @@ public class MediaPicker {
     }
 
     /**
+     * This is a hack to allow the file provider API to still
+     * work on older API versions.
+     *
+     * @see http://bit.ly/2iC4bUJ
+     */
+    private static void grantWriteAccessToURI(final @NonNull Context context,
+                                              final @NonNull Intent intent,
+                                              final @NonNull Uri uri) {
+        final List<ResolveInfo> resInfoList = context
+            .getPackageManager()
+            .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+
+        for (ResolveInfo resolveInfo : resInfoList) {
+            final String packageName = resolveInfo.activityInfo.packageName;
+            final int mode = Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION;
+
+            context.grantUriPermission(packageName, uri, mode);
+        }
+    }
+
+    /**
      * Refresh so file appears in associated
      * gallery and media explorer applications.
      */
-    @SuppressWarnings("WeakerAccess")
-    public static void refreshSystemMediaScanDataBase(final Context context, final File file) {
+    private static void refreshSystemMediaScanDataBase(final Context context, final File file) {
         final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 
         mediaScanIntent.setData(Uri.fromFile(file));
