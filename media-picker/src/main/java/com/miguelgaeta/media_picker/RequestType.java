@@ -3,13 +3,13 @@ package com.miguelgaeta.media_picker;
 /**
  * Created by Miguel Gaeta on 2/11/16.
  */
-public enum MediaPickerRequest {
+public enum RequestType {
 
-    REQUEST_CAPTURE,
-    REQUEST_GALLERY,
-    REQUEST_DOCUMENTS,
-    REQUEST_CROP,
-    REQUEST_CHOOSER;
+    CAMERA,
+    GALLERY,
+    DOCUMENTS,
+    CROP,
+    CHOOSER;
 
     /**
      * Internally get the associated request code to used in
@@ -18,27 +18,16 @@ public enum MediaPickerRequest {
      * @return Unique request code for each operation.
      */
     int getCode() {
-
         switch (this) {
-
-            case REQUEST_CAPTURE:
-
+            case CAMERA:
                 return 777;
-
-            case REQUEST_GALLERY:
-
+            case GALLERY:
                 return 778;
-
-            case REQUEST_DOCUMENTS:
-
+            case DOCUMENTS:
                 return 779;
-
-            case REQUEST_CROP:
-
+            case CROP:
                 return 800;
-
-            case REQUEST_CHOOSER:
-
+            case CHOOSER:
                 return 801;
         }
 
@@ -53,29 +42,18 @@ public enum MediaPickerRequest {
      *
      * @return Request enum.
      */
-    static MediaPickerRequest create(int code) {
-
+    static RequestType create(int code) {
         switch (code) {
-
             case 777:
-
-                return REQUEST_CAPTURE;
-
+                return CAMERA;
             case 778:
-
-                return REQUEST_GALLERY;
-
+                return GALLERY;
             case 779:
-
-                return REQUEST_DOCUMENTS;
-
+                return DOCUMENTS;
             case 800:
-
-                return REQUEST_CROP;
-
+                return CROP;
             case 801:
-
-                return REQUEST_CHOOSER;
+                return CHOOSER;
         }
 
         return null;
