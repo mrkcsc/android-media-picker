@@ -1,3 +1,4 @@
+## 1.4.1 - 2017-01-17
 ## 1.4.0 - 2017-01-17
 
 - Fix bug with Camera not being able to write to FileProvider URI on older APIs.
