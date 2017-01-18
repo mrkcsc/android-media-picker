@@ -80,7 +80,11 @@ class MediaPickerChooser {
                                                               final @NonNull Uri captureFileURI,
                                                               final @NonNull String mimeType) {
 
-        final Intent typeCamera = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        final Intent typeCamera = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
+            .putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI)
+            .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
         final Intent typeGallery = MediaPicker.getIntent(Intent.ACTION_PICK, mimeType);
         final Intent typeDocuments = MediaPicker.getIntent(Intent.ACTION_GET_CONTENT, mimeType);
 
