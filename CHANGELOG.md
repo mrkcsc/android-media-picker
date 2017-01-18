@@ -1,3 +1,8 @@
+## 1.4.0 - 2017-01-17
+
+- Fix bug with Camera not being able to write to FileProvider URI on older APIs.
+- Rename request type Enum.
+
 ## 1.3.3 - 2016-19-22
 
 - Add support for all file types via intent filter.
