@@ -10,7 +10,6 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
 
 import com.android.camera.CropImageIntentBuilder;
 
@@ -38,7 +37,7 @@ public class MediaPicker {
 
             final Intent intent = MediaPickerChooser.getMediaChooserIntent(provider.getContext().getPackageManager(), title, captureFileURI, mimeType);
 
-            startFor(provider, intent, MediaPickerRequest.REQUEST_CHOOSER.getCode());
+            startFor(provider, intent, RequestType.CHOOSER.getCode());
 
         } catch (final IOException e) {
 
@@ -68,7 +67,7 @@ public class MediaPicker {
                 .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            startFor(provider, intent, MediaPickerRequest.REQUEST_CAPTURE.getCode());
+            startFor(provider, intent, RequestType.CAMERA.getCode());
 
         } catch (final IOException e) {
 
@@ -88,7 +87,7 @@ public class MediaPicker {
 
             final Intent intent = getIntent(Intent.ACTION_PICK, mimeType);
 
-            startFor(provider, intent, MediaPickerRequest.REQUEST_GALLERY.getCode());
+            startFor(provider, intent, RequestType.GALLERY.getCode());
 
         } catch (final IOException e) {
 
@@ -116,7 +115,7 @@ public class MediaPicker {
 
             final Intent intent = getIntent(Intent.ACTION_GET_CONTENT, mimeType);
 
-            startFor(provider, intent, MediaPickerRequest.REQUEST_DOCUMENTS.getCode());
+            startFor(provider, intent, RequestType.DOCUMENTS.getCode());
 
         } catch (final IOException e) {
 
@@ -161,7 +160,7 @@ public class MediaPicker {
             intentBuilder.setOutlineColor(colorInt);
             intentBuilder.setScaleUpIfNeeded(true);
 
-            startFor(provider, intentBuilder.getIntent(provider.getContext()), MediaPickerRequest.REQUEST_CROP.getCode());
+            startFor(provider, intentBuilder.getIntent(provider.getContext()), RequestType.CROP.getCode());
 
         } catch (final IOException e) {
 
@@ -202,7 +201,7 @@ public class MediaPicker {
      */
     public static void handleActivityResult(final Context context, final int requestCode, final int resultCode, final Intent data, final OnResult onError) {
 
-        final MediaPickerRequest request = MediaPickerRequest.create(requestCode);
+        final RequestType request = RequestType.create(requestCode);
 
         if (request == null) {
 
@@ -255,16 +254,16 @@ public class MediaPicker {
      *
      * @throws IOException Error thrown when no result can be extracted.
      */
-    private static Uri handleActivityUriResult(final Context context, final MediaPickerRequest request, final Intent data) throws IOException {
+    private static Uri handleActivityUriResult(final Context context, final RequestType request, final Intent data) throws IOException {
 
         switch (request) {
 
-            case REQUEST_CAPTURE:
-            case REQUEST_CROP:
+            case CAMERA:
+            case CROP:
 
                 return getCaptureFileUriAndClear(context);
 
-            case REQUEST_CHOOSER:
+            case CHOOSER:
 
                 if (data != null && data.getData() != null) {
 
@@ -275,8 +274,8 @@ public class MediaPicker {
 
                 return getCaptureFileUriAndClear(context);
 
-            case REQUEST_DOCUMENTS:
-            case REQUEST_GALLERY:
+            case DOCUMENTS:
+            case GALLERY:
 
                 deleteCaptureFileUri(context);
 
@@ -430,7 +429,7 @@ public class MediaPicker {
      */
     public interface OnResult extends OnError {
 
-        void onSuccess(final File mediaFile, final String mimeType, final MediaPickerRequest request);
+        void onSuccess(final File mediaFile, final String mimeType, final RequestType request);
 
         void onCancelled();
     }

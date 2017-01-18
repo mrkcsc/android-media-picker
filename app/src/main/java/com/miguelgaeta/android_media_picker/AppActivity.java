@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import com.miguelgaeta.media_picker.MediaPicker;
 import com.miguelgaeta.media_picker.Encoder;
-import com.miguelgaeta.media_picker.MediaPickerRequest;
+import com.miguelgaeta.media_picker.RequestType;
 import com.miguelgaeta.media_picker.MimeType;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -81,11 +81,11 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
             }
 
             @Override
-            public void onSuccess(final File file, final String mimeType, MediaPickerRequest request) {
+            public void onSuccess(final File file, final String mimeType, RequestType request) {
 
                 Log.e("MediaPicker", "Got file result: '" + file + "', with mime type: '" + mimeType + "', for code: '" + request + "'.");
 
-                if (request == MediaPickerRequest.REQUEST_GALLERY) {
+                if (request == RequestType.GALLERY) {
                     try {
                         final String encoded = Encoder.getDataUrl(mimeType, file);
 
@@ -95,7 +95,7 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                     }
                 }
 
-                if (request != MediaPickerRequest.REQUEST_CROP && MimeType.isImage(mimeType)) {
+                if (request != RequestType.CROP && MimeType.isImage(mimeType)) {
 
                     final int paramColor = ContextCompat.getColor(AppActivity.this, android.R.color.black);
                     final int paramWidth = 128;
