@@ -1,3 +1,7 @@
+## 1.5.0 - 2017-02-23
+
+- Delegate file provider to consuming application.
+
 ## 1.4.1 - 2017-01-17
 ## 1.4.0 - 2017-01-17
 
