@@ -8,13 +8,13 @@ A utility library that allows a user to easily take a picture from the gallery, 
 
 ```groovy
 
-compile 'com.miguelgaeta.android-media-picker:media-picker:1.5.0'
+compile 'com.miguelgaeta.android-media-picker:media-picker:1.5.1'
 
 ```
 
 ### Usage
 
-First implement the MediaPicker.Provider interface in your Activities or Fragments.  Then open media chooser - presents the user with a chooser showing all matching activities for picking media:
+First implement the `MediaPicker.Provider` interface in your Activities or Fragments.  Then open media chooser - presents the user with a chooser showing all matching activities for picking media:
 
 ```java
 
@@ -95,7 +95,7 @@ allprojects {
 
 ```
 
-For operations that require it, `WRITE_EXTERNAL_STORAGE` permission is added to the merged [Manifest](http://developer.android.com/guide/topics/manifest/manifest-intro.html).  You do not need to add this permission into your own manifest.
+For operations that require it, `WRITE_EXTERNAL_STORAGE`, `READ_EXTERNAL_STORAGE` permissions are added to the merged [Manifest](http://developer.android.com/guide/topics/manifest/manifest-intro.html).  You do not need to add this permission into your own manifest.
 
 ### License
 

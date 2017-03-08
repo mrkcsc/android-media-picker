@@ -1,22 +1,26 @@
 package com.miguelgaeta.android_media_picker;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.miguelgaeta.media_picker.MediaPicker;
 import com.miguelgaeta.media_picker.Encoder;
-import com.miguelgaeta.media_picker.RequestType;
+import com.miguelgaeta.media_picker.MediaPicker;
 import com.miguelgaeta.media_picker.MimeType;
+import com.miguelgaeta.media_picker.RequestType;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @SuppressWarnings({"ConstantConditions", "CodeBlock2Expr"})
 public class AppActivity extends AppCompatActivity implements MediaPicker.Provider {
@@ -119,5 +123,20 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
     @Override
     public Context getContext() {
         return this;
+    }
+
+    @Override
+    public File getImageFile() {
+        final File imagesDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Pictures");
+
+        if (!imagesDirectory.mkdirs() && !imagesDirectory.isDirectory()) {
+            Log.e("MediaPicker", "Directory not created");
+        }
+
+        @SuppressLint("SimpleDateFormat")
+        final String timeStamp = (new SimpleDateFormat("yyyyMMdd_HHmmss")).format(new Date());
+        final String imageFileName = timeStamp + ".jpg";
+
+        return new File(imagesDirectory, "imageFile-" + imageFileName);
     }
 }

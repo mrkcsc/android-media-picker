@@ -1,3 +1,7 @@
+## 1.5.1 - 2017-02-23
+
+-- Don't delete temporary camera URI since it is not created.
+
 ## 1.5.0 - 2017-02-23
 
 - Delegate file provider to consuming application.
