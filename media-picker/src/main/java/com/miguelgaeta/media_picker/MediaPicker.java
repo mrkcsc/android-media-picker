@@ -273,7 +273,7 @@ public class MediaPicker {
             case CAMERA:
             case CROP:
 
-                return getCaptureFileUri(context);
+                return getCaptureFileUriAndClear(context);
 
             case CHOOSER:
 
@@ -282,7 +282,7 @@ public class MediaPicker {
                     return data.getData();
                 }
 
-                return getCaptureFileUri(context);
+                return getCaptureFileUriAndClear(context);
 
             case DOCUMENTS:
             case GALLERY:
@@ -346,7 +346,7 @@ public class MediaPicker {
      *
      * @return Associated file Uri if found.
      */
-    private static Uri getCaptureFileUri(final Context context) {
+    private static Uri getCaptureFileUriAndClear(final Context context) {
 
         final String uriString = getSharedPreferences(context).getString("picker_uri", null);
 
