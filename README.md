@@ -95,7 +95,7 @@ allprojects {
 
 ```
 
-For operations that require it, `WRITE_EXTERNAL_STORAGE` permission is added to the merged [Manifest](http://developer.android.com/guide/topics/manifest/manifest-intro.html).  You do not need to add this permission into your own manifest.
+For operations that require it, `WRITE_EXTERNAL_STORAGE`, `READ_EXTERNAL_STORAGE` permissions are added to the merged [Manifest](http://developer.android.com/guide/topics/manifest/manifest-intro.html).  You do not need to add this permission into your own manifest.
 
 ### License
 
