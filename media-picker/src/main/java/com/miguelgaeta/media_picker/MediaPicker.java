@@ -12,7 +12,6 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
 
 import com.android.camera.CropImageIntentBuilder;
 
@@ -315,8 +314,6 @@ public class MediaPicker {
         final Context context = provider.getContext();
 
         final String authority = context.getPackageName() + ".file-provider";
-
-        Log.e("MediaPicker", "Auth: " + authority);
 
         final Uri captureFileURI = FileProvider.getUriForFile(context, authority, file);
 
