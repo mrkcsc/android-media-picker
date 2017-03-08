@@ -14,7 +14,7 @@ compile 'com.miguelgaeta.android-media-picker:media-picker:1.5.0'
 
 ### Usage
 
-First implement the MediaPicker.Provider interface in your Activities or Fragments.  Then open media chooser - presents the user with a chooser showing all matching activities for picking media:
+First implement the `MediaPicker.Provider` interface in your Activities or Fragments.  Then open media chooser - presents the user with a chooser showing all matching activities for picking media:
 
 ```java
 
