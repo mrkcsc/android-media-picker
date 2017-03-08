@@ -12,6 +12,7 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 
 import com.android.camera.CropImageIntentBuilder;
 
@@ -239,8 +240,6 @@ public class MediaPicker {
 
                 case Activity.RESULT_CANCELED:
 
-                    deleteCaptureFileUri(context);
-
                     onError.onCancelled();
 
                     break;
@@ -275,23 +274,19 @@ public class MediaPicker {
             case CAMERA:
             case CROP:
 
-                return getCaptureFileUriAndClear(context);
+                return getCaptureFileUri(context);
 
             case CHOOSER:
 
                 if (data != null && data.getData() != null) {
 
-                    deleteCaptureFileUri(context);
-
                     return data.getData();
                 }
 
-                return getCaptureFileUriAndClear(context);
+                return getCaptureFileUri(context);
 
             case DOCUMENTS:
             case GALLERY:
-
-                deleteCaptureFileUri(context);
 
                 if (data == null || data.getData() == null) {
 
@@ -320,6 +315,8 @@ public class MediaPicker {
         final Context context = provider.getContext();
 
         final String authority = context.getPackageName() + ".file-provider";
+
+        Log.e("MediaPicker", "Auth: " + authority);
 
         final Uri captureFileURI = FileProvider.getUriForFile(context, authority, file);
 
@@ -352,7 +349,7 @@ public class MediaPicker {
      *
      * @return Associated file Uri if found.
      */
-    private static Uri getCaptureFileUriAndClear(final Context context) {
+    private static Uri getCaptureFileUri(final Context context) {
 
         final String uriString = getSharedPreferences(context).getString("picker_uri", null);
 
@@ -375,28 +372,6 @@ public class MediaPicker {
      */
     private static SharedPreferences getSharedPreferences(final Context context) {
         return context.getSharedPreferences("picker", Context.MODE_PRIVATE);
-    }
-
-    /**
-     * If present, delete capture file URI from disk.
-     *
-     * @return Returns true if cleaned successfully.
-     */
-    private static boolean deleteCaptureFileUri(final Context context) throws IOException {
-
-        final Uri uri = getCaptureFileUriAndClear(context);
-
-        if (uri != null) {
-
-            final File file = MediaPickerUri.resolveToFile(context, uri);
-            final boolean result = file.delete();
-
-            refreshSystemMediaScanDataBase(context, file);
-
-            return result;
-        }
-
-        return true;
     }
 
     /**
