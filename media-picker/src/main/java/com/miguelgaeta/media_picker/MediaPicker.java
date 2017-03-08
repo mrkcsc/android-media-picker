@@ -36,7 +36,7 @@ public class MediaPicker {
      */
     public static void openMediaChooser(final Provider provider, final String title, final OnError onError, final String mimeType) {
         try {
-            final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
+            final Uri captureFileURI = createTempImageFileAndPersistUri(provider);
 
             final Intent intent = MediaPickerChooser.getMediaChooserIntent(provider.getContext().getPackageManager(), title, captureFileURI, mimeType);
 
@@ -68,7 +68,7 @@ public class MediaPicker {
      */
     public static void startForCamera(final Provider provider, final OnError onError) {
         try {
-            final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
+            final Uri captureFileURI = createTempImageFileAndPersistUri(provider);
 
             final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 .putExtra(MediaStore.EXTRA_OUTPUT, captureFileURI)
@@ -160,7 +160,7 @@ public class MediaPicker {
      */
     private static void startForImageCrop(final Provider provider, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError onError) {
         try {
-            final Uri captureFileURI = createTempImageFileAndPersistUri(provider.getContext());
+            final Uri captureFileURI = createTempImageFileAndPersistUri(provider);
 
             final CropImageIntentBuilder intentBuilder = new CropImageIntentBuilder(outputWidth, outputHeight, captureFileURI);
 
@@ -315,8 +315,9 @@ public class MediaPicker {
      *
      * @throws IOException Throws if cannot be created or persisted.
      */
-    private static Uri createTempImageFileAndPersistUri(final Context context) throws IOException {
-        final File file = MediaPickerFile.create(context.getFilesDir(), "files", ".jpg");
+    private static Uri createTempImageFileAndPersistUri(final Provider provider) throws IOException {
+        final File file = provider.getImageFile();
+        final Context context = provider.getContext();
 
         final String authority = context.getPackageName() + ".file-provider";
 
@@ -479,6 +480,8 @@ public class MediaPicker {
     public interface Provider {
 
         Context getContext();
+
+        File getImageFile();
 
         void startActivityForResult(final Intent intent, final int requestCode);
     }
