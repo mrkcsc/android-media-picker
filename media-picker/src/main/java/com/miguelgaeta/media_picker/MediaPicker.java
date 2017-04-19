@@ -12,6 +12,7 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
+import android.widget.Toast;
 
 import com.android.camera.CropImageIntentBuilder;
 
@@ -51,6 +52,22 @@ public class MediaPicker {
 
             onError.onError(e);
         }
+    }
+
+    public static void openMediaChooser(final Provider provider, final int titleResId, final int errorResId) {
+        openMediaChooser(provider, titleResId, errorResId, MimeType.IMAGES);
+    }
+
+    public static void openMediaChooser(final Provider provider, final int titleResId, final int errorResId, final String mimeType) {
+        openMediaChooser(provider, provider.getContext().getString(titleResId), new OnError() {
+            @Override
+            public void onError(IOException e) {
+                final Context context = provider.getContext();
+                final String errorMessage = context.getString(errorResId, e.getMessage());
+
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        }, mimeType);
     }
 
     /**
