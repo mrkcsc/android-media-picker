@@ -78,7 +78,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 ### Configuration
 
-This library provides image cropping functionality via a dependency to Lorenzo Villani's [Crop Image](https://github.com/lvillani/android-cropimage).  When including this library add his repository to your `build.gradle` to obtain the dependency.
+This library provides image cropping functionality via a dependency to Yalantis's [uCrop](https://github.com/Yalantis/uCrop).  When including this library add the following to your `build.gradle` to obtain the dependency.
 
 ```groovy
 
@@ -86,10 +86,7 @@ allprojects {
 
     repositories {
         jcenter()
-
-        maven {
-            url 'http://lorenzo.villani.me/android-cropimage/'
-        }
+        maven { url 'https://jitpack.io' }
     }
 }
 

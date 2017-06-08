@@ -7,14 +7,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
-import com.android.camera.CropImageIntentBuilder;
+import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.io.IOException;
@@ -158,11 +160,14 @@ public class MediaPicker {
     }
 
     /**
-     * @see #startForImageCrop(Provider, File, int, int, int, OnError)
+     * @see #startForImageCrop(Provider, Uri, int, int, OnError)
      */
-    public static void startForImageCrop(final Provider provider, final File file, int outputWidth, int outputHeight, int colorInt, final OnError onError) {
+    public static void startForImageCrop(final Provider provider, final File file, int maxOutputWidth, int maxOutputHeight, final OnError onError) {
+        startForImageCrop(provider, Uri.fromFile(file), maxOutputWidth, maxOutputHeight, onError);
+    }
 
-        startForImageCrop(provider, Uri.fromFile(file), outputWidth, outputHeight, colorInt, onError);
+    public static void startForImageCrop(final Provider provider, final File file, int maxOutputWidth, int maxOutputHeight, final OnError onError, final @Nullable UCrop.Options options) {
+        startForImageCrop(provider, Uri.fromFile(file), maxOutputWidth, maxOutputHeight, onError, options);
     }
 
     /**
@@ -170,27 +175,36 @@ public class MediaPicker {
      *
      * @param provider Source {@link Provider}.
      * @param uri Source file URI.
-     * @param outputWidth Cropped file output width.
-     * @param outputHeight Cropped file output height.
+     * @param maxOutputWidth Cropped file output width.
+     * @param maxOutputHeight Cropped file output height.
      * @param colorInt Cropping UI circle color.
      * @param onError Result callbacks.
      */
-    public static void startForImageCrop(final Provider provider, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError onError) {
+    public static void startForImageCrop(final Provider provider, final Uri uri, int maxOutputWidth, int maxOutputHeight, final OnError onError) {
+      startForImageCrop(provider, uri, maxOutputWidth, maxOutputHeight, onError, null);
+    }
 
+    public static void startForImageCrop(final Provider provider, final Uri uri, int maxOutputWidth, int maxOutputHeight, final OnError onError, final @Nullable UCrop.Options options) {
         try {
-            final Uri captureFileURI = createTempImageFileAndPersistUri(provider);
+            final UCrop.Options cropOptions = options != null
+                ? options
+                : new UCrop.Options();
 
-            final CropImageIntentBuilder intentBuilder = new CropImageIntentBuilder(outputWidth, outputHeight, captureFileURI);
+            // Force JPEG format compression now while working out filename strategy.
+            cropOptions.setCompressionFormat(Bitmap.CompressFormat.JPEG);
 
-            intentBuilder.setSourceImage(uri);
-            intentBuilder.setDoFaceDetection(false);
-            intentBuilder.setOutlineCircleColor(colorInt);
-            intentBuilder.setOutlineColor(colorInt);
-            intentBuilder.setScaleUpIfNeeded(true);
+            final Context context = provider.getContext();
 
-            final Intent intent = intentBuilder.getIntent(provider.getContext());
+            //TODO: replace this with directly using a FileProvider URI once UCrop can handle it.
+            final Uri destUri = Uri.fromFile(provider.getImageFile());
 
-            grantWriteAccessToURI(provider.getContext(), intent, captureFileURI);
+            final UCrop uCrop = UCrop.of(uri, destUri);
+            uCrop.withOptions(cropOptions);
+            uCrop.withMaxResultSize(maxOutputWidth, maxOutputHeight);
+
+            final Intent intent = uCrop.getIntent(context);
+
+            grantWriteAccessToURI(context, intent, destUri);
 
             startFor(provider, intent, RequestType.CROP.getCode());
 
@@ -277,9 +291,10 @@ public class MediaPicker {
         switch (request) {
 
             case CAMERA:
-            case CROP:
-
                 return getCaptureFileUriAndClear(context);
+
+            case CROP:
+                return UCrop.getOutput(data);
 
             case CHOOSER:
 
@@ -344,7 +359,7 @@ public class MediaPicker {
     }
 
     /**
-     * When taking a picture from a camera or cropping, we need to store the
+     * When choosing an image from a camera or gallery, we need to store the
      * Uri to a temporary file to be filled.  Fetch it here and once
      * recovered remove it from memory.
      *

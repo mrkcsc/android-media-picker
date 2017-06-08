@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
@@ -88,11 +87,11 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
 
                 if (request != RequestType.CROP && MimeType.isImage(mimeType)) {
 
-                    final int paramColor = ContextCompat.getColor(AppActivity.this, android.R.color.black);
+//                    final int paramColor = ContextCompat.getColor(AppActivity.this, android.R.color.black);
                     final int paramWidth = 512;
                     final int paramHeight = 512;
 
-                    MediaPicker.startForImageCrop(AppActivity.this, uri, paramWidth, paramHeight, paramColor, e -> {
+                    MediaPicker.startForImageCrop(AppActivity.this, uri, paramWidth, paramHeight, e -> {
 
                         Log.e("MediaPicker", "Open cropper error.", e);
                     });
