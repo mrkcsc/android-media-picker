@@ -32,7 +32,6 @@ dependencies {
 
     // File cropping utility.
     compile 'com.github.yalantis:ucrop:2.2.1'
-    compile 'com.github.yalantis:ucrop:2.2.1-native'
 }
 
 apply from: '../build.release-aar.gradle'
