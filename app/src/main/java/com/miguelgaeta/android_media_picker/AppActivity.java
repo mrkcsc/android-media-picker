@@ -87,7 +87,6 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
 
                 if (request != RequestType.CROP && MimeType.isImage(mimeType)) {
 
-//                    final int paramColor = ContextCompat.getColor(AppActivity.this, android.R.color.black);
                     final int paramWidth = 512;
                     final int paramHeight = 512;
 
