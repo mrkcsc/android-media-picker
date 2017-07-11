@@ -4,14 +4,15 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.miguelgaeta.media_picker.Encoder;
 import com.miguelgaeta.media_picker.MediaPicker;
 import com.miguelgaeta.media_picker.MimeType;
 import com.miguelgaeta.media_picker.RequestType;
@@ -77,44 +78,33 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
 
             @Override
             public void onError(IOException e) {
-
                 Log.e("MediaPicker", "Got file error.", e);
-
-                Toast
-                    .makeText(getContext(), "Got file error:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Got file error:" + e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override
-            public void onSuccess(final File file, final String mimeType, RequestType request) {
-
-                Log.e("MediaPicker", "Got file result: '" + file + "', with mime type: '" + mimeType + "', for code: '" + request + "'.");
-
-                if (request == RequestType.GALLERY) {
-                    try {
-                        final String encoded = Encoder.getDataUrl(mimeType, file);
-
-                        Log.e("MediaPicker", "Encoded data url: " + encoded);
-                    } catch (final IOException e) {
-                        Log.e("MediaPicker", "Encoded data url failure.", e);
-                    }
-                }
+            public void onSuccess(final Uri uri, final String mimeType, RequestType request) {
+                Log.e("MediaPicker", "Got file result: '" + uri + "', with mime type: '" + mimeType + "', for code: '" + request + "'.");
 
                 if (request != RequestType.CROP && MimeType.isImage(mimeType)) {
 
                     final int paramColor = ContextCompat.getColor(AppActivity.this, android.R.color.black);
-                    final int paramWidth = 128;
-                    final int paramHeight = 128;
+                    final int paramWidth = 512;
+                    final int paramHeight = 512;
 
-                    MediaPicker.startForImageCrop(AppActivity.this, file, paramWidth, paramHeight, paramColor, e -> {
+                    MediaPicker.startForImageCrop(AppActivity.this, uri, paramWidth, paramHeight, paramColor, e -> {
 
                         Log.e("MediaPicker", "Open cropper error.", e);
                     });
+
+                } else {
+                    ImageView imageView = (ImageView) findViewById(R.id.image_result);
+                    imageView.setImageURI(uri);
                 }
             }
 
             @Override
             public void onCancelled() {
-
                 Log.e("MediaPicker", "Got cancelled event.");
             }
         });

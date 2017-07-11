@@ -175,7 +175,8 @@ public class MediaPicker {
      * @param colorInt Cropping UI circle color.
      * @param onError Result callbacks.
      */
-    private static void startForImageCrop(final Provider provider, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError onError) {
+    public static void startForImageCrop(final Provider provider, final Uri uri, int outputWidth, int outputHeight, int colorInt, final OnError onError) {
+
         try {
             final Uri captureFileURI = createTempImageFileAndPersistUri(provider);
 
@@ -230,44 +231,32 @@ public class MediaPicker {
      * @param data Data containing the result.
      * @param onError Result callbacks.
      */
-    public static void handleActivityResult(final Context context, final int requestCode, final int resultCode, final Intent data, final OnResult onError) {
+    public static void handleActivityResult(final Context context, final int requestCode, final int resultCode, final Intent data, final OnResult result) {
 
         final RequestType request = RequestType.create(requestCode);
 
         if (request == null) {
-
             return;
         }
 
         try {
-
             switch (resultCode) {
-
                 case Activity.RESULT_OK:
-
                     final Uri uri = handleActivityUriResult(context, request, data);
-                    final File file = MediaPickerUri.resolveToFile(context, uri);
-
-                    refreshSystemMediaScanDataBase(context, file);
-
-                    onError.onSuccess(file, MimeType.getMimeType(context, uri), request);
-
+                    refreshSystemMediaScanDataBase(context, uri);
+                    result.onSuccess(uri, MimeType.getMimeType(context, uri), request);
                     break;
 
                 case Activity.RESULT_CANCELED:
-
-                    onError.onCancelled();
-
+                    result.onCancelled();
                     break;
 
                 default:
-
                     throw new IOException("Bad activity result code: " + resultCode + ", for request code: " + requestCode);
             }
 
         } catch (final IOException e) {
-
-            onError.onError(e);
+            result.onError(e);
         }
     }
 
@@ -413,12 +402,13 @@ public class MediaPicker {
      * Refresh so file appears in associated
      * gallery and media explorer applications.
      */
-    private static void refreshSystemMediaScanDataBase(final Context context, final File file) {
-        final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-
-        mediaScanIntent.setData(Uri.fromFile(file));
-
+    private static void refreshSystemMediaScanDataBase(final Context context, final Uri uri) {
+        final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri);
         context.sendBroadcast(mediaScanIntent);
+    }
+
+    private static void refreshSystemMediaScanDataBase(final Context context, final File file) {
+        refreshSystemMediaScanDataBase(context, Uri.fromFile(file));
     }
 
     /**
@@ -453,7 +443,7 @@ public class MediaPicker {
      */
     public interface OnResult extends OnError {
 
-        void onSuccess(final File mediaFile, final String mimeType, final RequestType request);
+        void onSuccess(final Uri uri, final String mimeType, final RequestType request);
 
         void onCancelled();
     }
