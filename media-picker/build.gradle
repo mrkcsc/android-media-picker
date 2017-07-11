@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 //noinspection GroovyMissingReturnStatement
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '25.0.3'
 
     defaultConfig {
         minSdkVersion 15
@@ -18,15 +18,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    repositories {
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
 }
 
 dependencies {
 
-    //noinspection GradleDynamicVersion || File provider compatibility.
-    compile 'com.android.support:support-core-utils:25.+'
+    // File provider compatibility.
+    compile 'com.android.support:support-core-utils:25.3.1'
 
-    //noinspection GradleDynamicVersion || File cropping utility.
-    compile 'me.villani.lorenzo.android:android-cropimage:1.+'
+    // File cropping utility.
+    compile 'com.github.yalantis:ucrop:2.2.1'
 }
 
 apply from: '../build.release-aar.gradle'
