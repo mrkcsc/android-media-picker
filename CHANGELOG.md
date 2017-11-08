@@ -1,3 +1,7 @@
+## 1.7.0 - 2017-09-23
+
+-- Delegate mime type to consumer.
+
 ## 1.6.0 - 2017-02-23
 
 -- Use a new image cropping library.
