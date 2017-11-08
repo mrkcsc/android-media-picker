@@ -1,21 +1,15 @@
-plugins {
-
-    // Java closures.
-    id 'me.tatarka.retrolambda' version '3.2.5'
-}
-
 // Application module.
 apply plugin: 'com.android.application'
 
 //noinspection GroovyMissingReturnStatement
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 27
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "com.miguelgaeta.android_media_picker"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
     }
@@ -34,23 +28,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    repositories {
-        jcenter()
-        maven { url 'https://jitpack.io' }
-    }
 }
 
 dependencies {
 
     // Support libraries.
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:27.0.0'
 
     // Rx Java permissions handler.
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
 
     // Rx Java
-    compile 'io.reactivex:rxjava:1.1.0'
+    compile 'io.reactivex:rxjava:1.3.2'
 
     // Rx Java bindings.
     compile 'com.jakewharton.rxbinding:rxbinding:0.2.0'

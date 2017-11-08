@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Created by Miguel Gaeta on 2/10/16.
  */
-@SuppressWarnings({"UnusedDeclaration", "DefaultFileTemplate", "JavadocReference", "WeakerAccess"})
+@SuppressWarnings({"UnusedDeclaration", "DefaultFileTemplate", "JavadocReference", "WeakerAccess", "SameParameterValue"})
 public class MediaPicker {
 
     /**
@@ -57,7 +57,7 @@ public class MediaPicker {
     }
 
     public static void openMediaChooser(final Provider provider, final int titleResId, final int errorResId) {
-        openMediaChooser(provider, titleResId, errorResId, MimeType.IMAGES);
+        openMediaChooser(provider, titleResId, errorResId, "image/*");
     }
 
     public static void openMediaChooser(final Provider provider, final int titleResId, final int errorResId, final String mimeType) {
@@ -76,7 +76,7 @@ public class MediaPicker {
      * @see #openMediaChooser(Provider, String, OnError, String)
      */
     public static void openMediaChooser(final Provider provider, final String title, final OnError onError) {
-        openMediaChooser(provider, title, onError, MimeType.ALL);
+        openMediaChooser(provider, title, onError, "*/*");
     }
 
     /**
@@ -128,7 +128,7 @@ public class MediaPicker {
      * @see #startForGallery(Provider, OnError, String)
      */
     public static void startForGallery(final Provider provider, final OnError onError) {
-        startForGallery(provider, onError, MimeType.ALL);
+        startForGallery(provider, onError, "*/*");
     }
 
     /**
@@ -156,7 +156,7 @@ public class MediaPicker {
      * @see #startForDocuments(Provider, OnError, String)
      */
     public static void startForDocuments(final Provider provider, final OnError onError) {
-        startForDocuments(provider, onError, MimeType.ALL);
+        startForDocuments(provider, onError, "*/*");
     }
 
     /**
@@ -258,7 +258,7 @@ public class MediaPicker {
                 case Activity.RESULT_OK:
                     final Uri uri = handleActivityUriResult(context, request, data);
                     refreshSystemMediaScanDataBase(context, uri);
-                    result.onSuccess(uri, MimeType.getMimeType(context, uri), request);
+                    result.onSuccess(uri, request);
                     break;
 
                 case Activity.RESULT_CANCELED:
@@ -458,7 +458,7 @@ public class MediaPicker {
      */
     public interface OnResult extends OnError {
 
-        void onSuccess(final Uri uri, final String mimeType, final RequestType request);
+        void onSuccess(final Uri uri, final RequestType request);
 
         void onCancelled();
     }

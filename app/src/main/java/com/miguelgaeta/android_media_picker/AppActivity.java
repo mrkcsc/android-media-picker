@@ -2,6 +2,7 @@ package com.miguelgaeta.android_media_picker;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,11 +10,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.miguelgaeta.media_picker.MediaPicker;
-import com.miguelgaeta.media_picker.MimeType;
 import com.miguelgaeta.media_picker.RequestType;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -56,7 +57,7 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
 
             Log.e("MediaPicker", "Start for gallery with images error.", e);
 
-        }, MimeType.IMAGES));
+        }, "image/*"));
 
         findViewById(R.id.activity_open_documents).setOnClickListener(v -> MediaPicker.startForDocuments(this, e -> {
 
@@ -82,10 +83,12 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
             }
 
             @Override
-            public void onSuccess(final Uri uri, final String mimeType, RequestType request) {
+            public void onSuccess(final Uri uri, final RequestType request) {
+                final String mimeType = getMimeType(getContext(), uri);
+
                 Log.e("MediaPicker", "Got file result: '" + uri + "', with mime type: '" + mimeType + "', for code: '" + request + "'.");
 
-                if (request != RequestType.CROP && MimeType.isImage(mimeType)) {
+                if (request != RequestType.CROP && isImage(mimeType)) {
 
                     final int paramWidth = 512;
                     final int paramHeight = 512;
@@ -96,7 +99,7 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                     });
 
                 } else {
-                    ImageView imageView = (ImageView) findViewById(R.id.image_result);
+                    ImageView imageView = findViewById(R.id.image_result);
                     imageView.setImageURI(uri);
                 }
             }
@@ -106,6 +109,82 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                 Log.e("MediaPicker", "Got cancelled event.");
             }
         });
+    }
+
+    /**
+     * Convenience method to determine if a given
+     * mime type is an image.
+     *
+     * @param mimeType Mime type string.
+     *
+     * @return True if image, false otherwise.
+     */
+    public static boolean isImage(final String mimeType) {
+        return mimeType != null && mimeType.startsWith("image/");
+    }
+
+    /**
+     * Get a best guess of the mime type associated with the target {@link Uri}.
+     *
+     * @param context Optional {@link Context} that checks for mime type from {@link ContentResolver}.
+     * @param uri Target {@link Uri} to obtain mime type for.
+     *
+     * @return Discovered mime type or null.
+     */
+    public static String getMimeType(final Context context, final Uri uri) {
+        if (uri == null) {
+            return null;
+        }
+
+        if (context != null) {
+            final String mimeType = getMimeTypeFromContentResolver(context.getContentResolver(), uri);
+
+            if (mimeType != null) {
+                return mimeType;
+            }
+        }
+
+        return getMimeTypeFromExtension(uri.toString());
+    }
+
+    /**
+     * Uses {@link ContentResolver#getType(Uri)} to extract a mime type.
+     *
+     * @param contentResolver {@link ContentResolver}.
+     * @param uri {@link Uri}.
+     *
+     * @return Discovered mime type or null.
+     */
+    private static String getMimeTypeFromContentResolver(final ContentResolver contentResolver,
+                                                         final Uri uri) {
+        if (uri == null || uri.getScheme() == null || contentResolver == null) {
+            return null;
+        }
+
+        if (!uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            return null;
+        }
+
+        return contentResolver.getType(uri);
+    }
+
+    /**
+     * Uses {@link MimeTypeMap#getMimeTypeFromExtension(String)} to extract a mime type.
+     *
+     * @param url {@link Uri}.
+     *
+     * @return Discovered mime type or null.
+     */
+    private static String getMimeTypeFromExtension(final String url) {
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+
+        if (extension != null) {
+            extension = extension.toLowerCase();
+
+            return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+
+        return null;
     }
 
     @Override
