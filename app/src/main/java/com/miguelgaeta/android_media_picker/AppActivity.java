@@ -99,7 +99,7 @@ public class AppActivity extends AppCompatActivity implements MediaPicker.Provid
                     });
 
                 } else {
-                    ImageView imageView = findViewById(R.id.image_result);
+                    ImageView imageView = (ImageView) findViewById(R.id.image_result);
                     imageView.setImageURI(uri);
                 }
             }
