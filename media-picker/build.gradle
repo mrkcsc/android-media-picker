@@ -2,12 +2,12 @@ apply plugin: 'com.android.library'
 
 //noinspection GroovyMissingReturnStatement
 android {
-    compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
     }
@@ -23,19 +23,19 @@ android {
 dependencies {
 
     //noinspection GradleDynamicVersion
-    provided 'com.android.support:appcompat-v7:25+'
+    implementation 'com.android.support:appcompat-v7:27+'
 
     //noinspection GradleDynamicVersion
-    provided 'com.android.support:animated-vector-drawable:25+'
+    implementation 'com.android.support:animated-vector-drawable:27+'
 
     //noinspection GradleDynamicVersion
-    provided 'com.android.support:support-compat:25+'
+    implementation 'com.android.support:support-compat:27+'
 
     //noinspection GradleDynamicVersion
-    provided 'com.android.support:support-core-utils:25+'
+    implementation 'com.android.support:support-core-utils:27+'
 
     // File cropping utility.
-    compile 'com.github.yalantis:ucrop:2.2.1'
+    api 'com.github.yalantis:ucrop:2.2.2'
 }
 
 apply from: '../build.release-aar.gradle'
