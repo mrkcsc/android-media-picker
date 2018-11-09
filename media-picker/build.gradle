@@ -23,19 +23,19 @@ android {
 dependencies {
 
     //noinspection GradleDynamicVersion
-    provided 'com.android.support:appcompat-v7:27+'
+    implementation 'com.android.support:appcompat-v7:27+'
 
     //noinspection GradleDynamicVersion
-    provided 'com.android.support:animated-vector-drawable:27+'
+    implementation 'com.android.support:animated-vector-drawable:27+'
 
     //noinspection GradleDynamicVersion
-    provided 'com.android.support:support-compat:27+'
+    implementation 'com.android.support:support-compat:27+'
 
     //noinspection GradleDynamicVersion
-    provided 'com.android.support:support-core-utils:27+'
+    implementation 'com.android.support:support-core-utils:27+'
 
     // File cropping utility.
-    compile 'com.github.yalantis:ucrop:2.2.2'
+    api 'com.github.yalantis:ucrop:2.2.2'
 }
 
 apply from: '../build.release-aar.gradle'

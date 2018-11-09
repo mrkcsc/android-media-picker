@@ -33,16 +33,16 @@ android {
 dependencies {
 
     // Support libraries.
-    compile 'com.android.support:appcompat-v7:27+'
+    implementation 'com.android.support:appcompat-v7:27+'
 
     // Rx Java permissions handler.
-    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
+    implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.5.2@aar'
 
     // Rx Java
-    compile 'io.reactivex:rxjava:1.3.4'
+    implementation 'io.reactivex:rxjava:1.3.4'
 
     // Rx Java bindings.
-    compile 'com.jakewharton.rxbinding:rxbinding:0.2.0'
+    implementation 'com.jakewharton.rxbinding:rxbinding:0.2.0'
 
-    compile project(':media-picker')
+    implementation project(':media-picker')
 }
