@@ -190,8 +190,8 @@ public class MediaPicker {
                 ? options
                 : new UCrop.Options();
 
-            // Force JPEG format compression now while working out filename strategy.
-            cropOptions.setCompressionFormat(Bitmap.CompressFormat.JPEG);
+            // Force PNG format compression
+            cropOptions.setCompressionFormat(Bitmap.CompressFormat.PNG);
 
             final Context context = provider.getContext();
 

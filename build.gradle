@@ -1,4 +1,10 @@
 buildscript {
+    ext._buildToolsVersion = '28.0.3'
+    ext._compileSdkVersion = 28
+    ext._targetSdkVersion = 28
+    ext._minSdkVersion = 16
+
+    ext.ucropVersion = '2.2.2'
 
     repositories {
         jcenter()
@@ -7,7 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.3.1'
     }
 }
 
