@@ -186,12 +186,12 @@ public class MediaPicker {
 
     public static void startForImageCrop(final Provider provider, final Uri uri, int maxOutputWidth, int maxOutputHeight, final OnError onError, final @Nullable UCrop.Options options) {
         try {
-            final UCrop.Options cropOptions = options != null
-                ? options
-                : new UCrop.Options();
+            final UCrop.Options cropOptions = options != null ? options : new UCrop.Options();
 
-            // Force PNG format compression
-            cropOptions.setCompressionFormat(Bitmap.CompressFormat.PNG);
+            // Compress to PNG by default if compression format is not set
+            if (cropOptions.getOptionBundle().getString(UCrop.Options.EXTRA_COMPRESSION_FORMAT_NAME) == null) {
+                cropOptions.setCompressionFormat(Bitmap.CompressFormat.PNG);
+            }
 
             final Context context = provider.getContext();
 
