@@ -1,3 +1,9 @@
+## 1.7.1 - 2017-09-23
+
+-- Support PNG format.
+-- Upgrade sdk and build tools version.
+-- Upgrade libraries.
+
 ## 1.7.0 - 2017-09-23
 
 -- Delegate mime type to consumer.
