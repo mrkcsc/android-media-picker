@@ -4,7 +4,7 @@ buildscript {
     ext._targetSdkVersion = 28
     ext._minSdkVersion = 16
 
-    ext.ucropVersion = '2.2.2'
+    ext.ucropVersion = '2.2.3'
 
     repositories {
         jcenter()
