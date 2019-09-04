@@ -1,3 +1,7 @@
+## 1.7.2 - 2017-09-23
+
+-- Bump uCrop to 2.2.3 and include native uCrop lib.
+
 ## 1.7.1 - 2017-09-23
 
 -- Support PNG format.
